@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "d:\\GameS\\paper plugin\\spigot-api\\spigot-api-1.16.5.jar",
+        "d:\\GameS\\paper plugin\\spigot-api\\fastjson-1.2.9.jar"
+    ]
+}
