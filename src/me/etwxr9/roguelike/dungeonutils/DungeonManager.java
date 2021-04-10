@@ -15,7 +15,19 @@ public class DungeonManager {
     public Player player;
 
     private static List<DungeonManager> dmList;
-    private static List<DungeonInfo> dungeonList;
+    private static List<DungeonInfo> diList;
+
+    // 使用JsonIO的函数加载所有json文件并解析为DungeonInfo，加入diList
+    public static void LoadDungeons(){
+        var names = JsonIO.AllDungeonFileName();
+        names.forEach(n->{
+            try {
+                diList.add(JsonIO.ParseDungeonInfo(JsonIO.ReadFile(n))); 
+            } catch (Exception e) {
+                
+            }
+        });
+    }
 
     // 新建DungeonManager
     public static DungeonManager NewDungeonManager(Player p, DungeonInfo di, RoomInfo cr) {
@@ -77,7 +89,7 @@ public class DungeonManager {
 
     // 返回对应DungeonInfo，没有则返回null
     public static DungeonInfo GetDungeonInfo(String worldName) {
-        for (DungeonInfo d : dungeonList) {
+        for (DungeonInfo d : diList) {
             if (d.World == worldName) {
                 return d;
             }
@@ -117,7 +129,7 @@ public class DungeonManager {
 
     // 返回dungeonList的副本
     public static List<DungeonInfo> GetDIList() {
-        return new ArrayList<DungeonInfo>(dungeonList);
+        return new ArrayList<DungeonInfo>(diList);
     }
 
 }

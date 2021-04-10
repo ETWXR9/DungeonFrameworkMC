@@ -9,10 +9,11 @@ import me.etwxr9.roguelike.commands.BaseCmd;
 import me.etwxr9.roguelike.commands.BaseTabCompleter;
 import me.etwxr9.roguelike.commands.CmdCreateDungeon;
 import me.etwxr9.roguelike.commands.CmdDeleteWorld;
+import me.etwxr9.roguelike.commands.CmdEnterDungeon;
 import me.etwxr9.roguelike.commands.CmdNewWorld;
 import me.etwxr9.roguelike.commands.CmdSetDefaultWorld;
 import me.etwxr9.roguelike.commands.CommandHandler;
-import me.etwxr9.roguelike.commands.TestSubcmd;
+import me.etwxr9.roguelike.dungeonutils.DungeonManager;
 
 public class Main extends JavaPlugin{
 
@@ -31,14 +32,17 @@ public class Main extends JavaPlugin{
         //管理配置文件
         saveDefaultConfig();
 
+        //加载DungeonInfo
+        DungeonManager.LoadDungeons();
+
         //注册指令
         cmdHandler = new CommandHandler();
         cmdHandler.register("rl", new BaseCmd());
-        cmdHandler.register("testsubcmd", new TestSubcmd());
         cmdHandler.register("createDungeon", new CmdCreateDungeon());
         cmdHandler.register("newWorld", new CmdNewWorld());
         cmdHandler.register("setDefaultWorld", new CmdSetDefaultWorld());
         cmdHandler.register("deleteWorld", new CmdDeleteWorld());
+        cmdHandler.register("enterDungeon", new CmdEnterDungeon());
         this.getCommand("rl").setExecutor(cmdHandler);
         this.getCommand("rl").setTabCompleter(new BaseTabCompleter());
 

@@ -33,6 +33,8 @@ public class CmdCreateDungeon implements CommandInterface {
             return true;
         }
 
+        //这里应当重加载一遍DM中的diList，然后使用DM提供的函数加载di
+
         p.sendMessage("开始读取刚创建的文件！");
         DungeonInfo newDungeon = new DungeonInfo();
         try {

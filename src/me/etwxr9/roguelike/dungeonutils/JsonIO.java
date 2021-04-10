@@ -1,16 +1,26 @@
 package me.etwxr9.roguelike.dungeonutils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
 
 import me.etwxr9.roguelike.Main;
 
 public class JsonIO {
+    // 返回所有地牢数据名
+    public static List<String> AllDungeonFileName(){
+        File dir = new File(Main.getInstance().getDataFolder().getAbsolutePath().toString()+"/");
+        var jsons = Arrays.asList(dir.list()).stream().filter(s->s.endsWith(".json")).collect(Collectors.toList());
+        return jsons;
+    }    
     // 读取地牢数据，如果文件不存在则反回""
     public static String ReadFile(String filename) throws IOException {
         var path = Paths.get(Main.getInstance().getDataFolder().getAbsolutePath() + "/" + filename + "/json");
