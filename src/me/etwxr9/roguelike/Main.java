@@ -34,7 +34,7 @@ public class Main extends JavaPlugin{
 
         //加载DungeonInfo
         DungeonManager.LoadDungeons();
-
+        getLogger().info("读取地牢数据!");
         //注册指令
         cmdHandler = new CommandHandler();
         cmdHandler.register("rl", new BaseCmd());

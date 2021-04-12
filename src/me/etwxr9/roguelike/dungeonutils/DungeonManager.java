@@ -1,11 +1,14 @@
 package me.etwxr9.roguelike.dungeonutils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import me.etwxr9.roguelike.Main;
 
 //每个该对象和一个玩家绑定。管理所有DungeonInfo。
 public class DungeonManager {
@@ -14,17 +17,19 @@ public class DungeonManager {
     public RoomInfo currentRoom;
     public Player player;
 
-    private static List<DungeonManager> dmList;
-    private static List<DungeonInfo> diList;
+    private static List<DungeonManager> dmList = new ArrayList<DungeonManager>();
+    private static List<DungeonInfo> diList = new ArrayList<DungeonInfo>();;
 
     // 使用JsonIO的函数加载所有json文件并解析为DungeonInfo，加入diList
-    public static void LoadDungeons(){
+    public static void LoadDungeons() {
         var names = JsonIO.AllDungeonFileName();
-        names.forEach(n->{
+        Main.getInstance().getLogger().info("读取地牢数据! names.length=" + names.size());
+        names.forEach(n -> {
             try {
-                diList.add(JsonIO.ParseDungeonInfo(JsonIO.ReadFile(n))); 
+                Main.getInstance().getLogger().info("读取地牢数据 " + n);
+                diList.add(JsonIO.ParseDungeonInfo(JsonIO.ReadFile(n)));
             } catch (Exception e) {
-                
+                Main.getInstance().getLogger().info("读取全部地牢数据出错！");
             }
         });
     }
@@ -77,6 +82,13 @@ public class DungeonManager {
         newRoom.Rooms.add(point);
         newRoom.PlayerPosition = new int[] { 1, 1, 1 };
         dungeon.Units.add(newRoom);
+        try {
+            JsonIO.WriteFile(dungeon.World, JsonIO.Parsejson(dungeon));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            p.sendMessage("保存地牢 "+dungeon.World+".json 文件时出错！");
+            e.printStackTrace();
+        }
         var roomSize = dungeon.UnitSize;
         var origin = new int[] { point[0] * roomSize[0], point[1] * roomSize[1], point[2] * roomSize[2] };
         FillDefaultRoom(p, origin, roomSize);
@@ -89,8 +101,11 @@ public class DungeonManager {
 
     // 返回对应DungeonInfo，没有则返回null
     public static DungeonInfo GetDungeonInfo(String worldName) {
+        Main.getInstance().getLogger().info("准备遍历DI查找" + worldName);
         for (DungeonInfo d : diList) {
-            if (d.World == worldName) {
+            Main.getInstance().getLogger().info("遍历DI中：" + d.World);
+            if (worldName.equals(d.World)) {
+                Main.getInstance().getLogger().info("遍历DI" + d.World + " 匹配");
                 return d;
             }
         }

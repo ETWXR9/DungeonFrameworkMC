@@ -18,12 +18,12 @@ public class JsonIO {
     // 返回所有地牢数据名
     public static List<String> AllDungeonFileName(){
         File dir = new File(Main.getInstance().getDataFolder().getAbsolutePath().toString()+"/");
-        var jsons = Arrays.asList(dir.list()).stream().filter(s->s.endsWith(".json")).collect(Collectors.toList());
+        var jsons = Arrays.asList(dir.list()).stream().filter(s->s.endsWith(".json")).map(s->s=s.substring(0,s.length()-5)).collect(Collectors.toList());
         return jsons;
     }    
     // 读取地牢数据，如果文件不存在则反回""
     public static String ReadFile(String filename) throws IOException {
-        var path = Paths.get(Main.getInstance().getDataFolder().getAbsolutePath() + "/" + filename + "/json");
+        var path = Paths.get(Main.getInstance().getDataFolder().getAbsolutePath() + "/" + filename + ".json");
         if (!Files.exists(path))
             return "";
         var data = Files.readString(path);

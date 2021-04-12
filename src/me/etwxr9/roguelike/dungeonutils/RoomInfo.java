@@ -1,5 +1,6 @@
 package me.etwxr9.roguelike.dungeonutils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoomInfo {
@@ -9,4 +10,8 @@ public class RoomInfo {
     public int[] PlayerPosition;
     public List<int[]> EnemyPosition;
     public List<int[]> Rooms;
+    public RoomInfo(){
+        EnemyPosition = new ArrayList<int[]>();
+        Rooms = new ArrayList<int[]>();
+    }
 }
