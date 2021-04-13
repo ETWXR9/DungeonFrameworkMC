@@ -18,10 +18,11 @@ public class DungeonManager {
     public Player player;
 
     private static List<DungeonManager> dmList = new ArrayList<DungeonManager>();
-    private static List<DungeonInfo> diList = new ArrayList<DungeonInfo>();;
+    private static List<DungeonInfo> diList = new ArrayList<DungeonInfo>();
 
     // 使用JsonIO的函数加载所有json文件并解析为DungeonInfo，加入diList
     public static void LoadDungeons() {
+        diList = new ArrayList<DungeonInfo>();;
         var names = JsonIO.AllDungeonFileName();
         Main.getInstance().getLogger().info("读取地牢数据! names.length=" + names.size());
         names.forEach(n -> {
@@ -50,9 +51,9 @@ public class DungeonManager {
 
     // 返回对应玩家的DM
     public static DungeonManager GetDMbyPlayer(Player p) {
-        var dm = dmList.stream().filter(d -> d.player.getName() == p.getName());
-        if (dm.count() > 0) {
-            return (DungeonManager) dm.toArray()[0];
+        var dm = dmList.stream().filter(d -> d.player.getName() == p.getName()).toArray();
+        if (dm.length > 0) {
+            return (DungeonManager) dm[0];
         } else
             return null;
     }

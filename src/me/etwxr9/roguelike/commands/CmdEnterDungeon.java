@@ -22,6 +22,7 @@ public class CmdEnterDungeon implements CommandInterface{
         if (di!=null) {
             if (dm!=null) {
                 dm.currentDungeon = di;
+                p.sendMessage("di.units.size="+di.Units.size());
                 dm.currentRoom = di.Units.get(0);
             }else{
                 dm = DungeonManager.NewDungeonManager(p, di, di.Units.get(0));

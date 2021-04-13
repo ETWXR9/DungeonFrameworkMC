@@ -33,7 +33,6 @@ public class CmdCreateDungeon implements CommandInterface {
             return true;
         }
 
-        //这里应当重加载一遍DM中的diList，然后使用DM提供的函数加载di
 
         p.sendMessage("开始读取刚创建的文件！");
         DungeonInfo newDungeon = new DungeonInfo();
@@ -49,6 +48,8 @@ public class CmdCreateDungeon implements CommandInterface {
         }
         //在0,0,0创建一个新房间，并传送玩家,设定当前房间
         var room = DungeonManager.NewDefaultRoom(p, newDungeon, new int[]{0,0,0});
+        //这里应当重加载一遍DM中的diList，然后使用DM提供的函数加载di
+        DungeonManager.LoadDungeons();
         //为该玩家设定DM
         DungeonManager.NewDungeonManager(p, newDungeon, room);
         return true;
