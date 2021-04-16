@@ -9,6 +9,7 @@ import me.etwxr9.roguelike.commands.BaseCmd;
 import me.etwxr9.roguelike.commands.BaseTabCompleter;
 import me.etwxr9.roguelike.commands.CmdCreateDungeon;
 import me.etwxr9.roguelike.commands.CmdDeleteWorld;
+import me.etwxr9.roguelike.commands.CmdDungeonInfo;
 import me.etwxr9.roguelike.commands.CmdEnterDungeon;
 import me.etwxr9.roguelike.commands.CmdNewWorld;
 import me.etwxr9.roguelike.commands.CmdSetDefaultWorld;
@@ -43,6 +44,7 @@ public class Main extends JavaPlugin{
         cmdHandler.register("setDefaultWorld", new CmdSetDefaultWorld());
         cmdHandler.register("deleteWorld", new CmdDeleteWorld());
         cmdHandler.register("enterDungeon", new CmdEnterDungeon());
+        cmdHandler.register("dungeonInfo", new CmdDungeonInfo());
         this.getCommand("rl").setExecutor(cmdHandler);
         this.getCommand("rl").setTabCompleter(new BaseTabCompleter());
 

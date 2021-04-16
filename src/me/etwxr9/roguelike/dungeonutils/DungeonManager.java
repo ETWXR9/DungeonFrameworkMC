@@ -22,7 +22,8 @@ public class DungeonManager {
 
     // 使用JsonIO的函数加载所有json文件并解析为DungeonInfo，加入diList
     public static void LoadDungeons() {
-        diList = new ArrayList<DungeonInfo>();;
+        diList = new ArrayList<DungeonInfo>();
+        ;
         var names = JsonIO.AllDungeonFileName();
         Main.getInstance().getLogger().info("读取地牢数据! names.length=" + names.size());
         names.forEach(n -> {
@@ -74,22 +75,19 @@ public class DungeonManager {
     // 传送玩家
     public static void TeleportPlayerToRoom(Player p, DungeonInfo dungeon, RoomInfo room) {
         var point = GetPoint(dungeon, room.Rooms.get(0), room.PlayerPosition);
-        p.teleport(new Location(p.getWorld(), point[0], point[1], point[2]));
+        p.teleport(new Location(Main.getInstance().getServer().getWorld(dungeon.World), point[0], point[1], point[2]));
     }
 
     // 新建房间并传送玩家
     public static RoomInfo NewDefaultRoom(Player p, DungeonInfo dungeon, int[] point) {
         RoomInfo newRoom = new RoomInfo();
+        newRoom.Id = "default";
         newRoom.Rooms.add(point);
         newRoom.PlayerPosition = new int[] { 1, 1, 1 };
         dungeon.Units.add(newRoom);
-        try {
-            JsonIO.WriteFile(dungeon.World, JsonIO.Parsejson(dungeon));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            p.sendMessage("保存地牢 "+dungeon.World+".json 文件时出错！");
-            e.printStackTrace();
-        }
+        if (!SaveDungeon(dungeon))
+            p.sendMessage("保存地牢 " + dungeon.World + ".json 文件时出错！");
+
         var roomSize = dungeon.UnitSize;
         var origin = new int[] { point[0] * roomSize[0], point[1] * roomSize[1], point[2] * roomSize[2] };
         FillDefaultRoom(p, origin, roomSize);
@@ -146,6 +144,16 @@ public class DungeonManager {
     // 返回dungeonList的副本
     public static List<DungeonInfo> GetDIList() {
         return new ArrayList<DungeonInfo>(diList);
+    }
+
+    // 保存
+    public static boolean SaveDungeon(DungeonInfo di) {
+        try {
+            JsonIO.WriteFile(di.World, JsonIO.Parsejson(di));
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
     }
 
 }
