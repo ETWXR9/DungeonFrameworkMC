@@ -33,6 +33,9 @@ public class JsonIO {
     // 写入地牢数据
     public static void WriteFile(String filename, String data) throws IOException {
         var path = Paths.get(Main.getInstance().getDataFolder().getAbsolutePath() + "/" + filename + ".json");
+        if (Files.exists(path)) {
+            Files.writeString(path, data);
+        }
         Files.writeString(path, data, StandardOpenOption.WRITE);
     }
 
@@ -50,6 +53,7 @@ public class JsonIO {
         dungeonInfo.Size = size;
         dungeonInfo.UnitSize = unitSize;
         dungeonInfo.Units = new ArrayList<RoomInfo>(size[0] * size[1] * size[2]);
+        dungeonInfo.initEmptyRoomList();
         // 创建以worldid为名的json
         var data = Parsejson(dungeonInfo);
         Files.writeString(path, data, StandardOpenOption.CREATE);

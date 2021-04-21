@@ -35,23 +35,20 @@ public class CmdCreateDungeon implements CommandInterface {
 
 
         p.sendMessage("开始读取刚创建的文件！");
-        DungeonInfo newDungeon = new DungeonInfo();
-        try {
-            var data = JsonIO.ReadFile(worldName);
-            // p.sendMessage("读取JSON内容为：" + data);
-            newDungeon = JsonIO.ParseDungeonInfo(data);
-            p.sendMessage("读取世界ID为：" + newDungeon.World);
-            p.sendMessage("读取世界Room数量为：" + newDungeon.Units.size());
-        } catch (Exception e) {
-            p.sendMessage("读取文件出错： " + e.getMessage());
-            return true;
-        }
-        //在0,0,0创建一个新房间，并传送玩家,设定当前房间
-        var room = DungeonManager.NewDefaultRoom(p, newDungeon, new int[]{0,0,0});
-        //这里应当重加载一遍DM中的diList，然后使用DM提供的函数加载di
+        // DungeonInfo newDungeon = new DungeonInfo();
+        // try {
+        //     var data = JsonIO.ReadFile(worldName);
+        //     // p.sendMessage("读取JSON内容为：" + data);
+        //     newDungeon = JsonIO.ParseDungeonInfo(data);
+        //     p.sendMessage("读取世界ID为：" + newDungeon.World);
+        //     p.sendMessage("读取世界Room数量为：" + newDungeon.Units.size());
+        // } catch (Exception e) {
+        //     p.sendMessage("读取文件出错： " + e.getMessage());
+        //     return true;
+        // }
         DungeonManager.LoadDungeons();
-        //为该玩家设定DM
-        DungeonManager.NewDungeonManager(p, newDungeon, room);
+        //在0,0,0创建一个新房间，并传送玩家,设定当前房间
+        var room = DungeonManager.NewDefaultRoom(p, DungeonManager.GetDungeonInfo(worldName));
         return true;
     }
 

@@ -3,6 +3,7 @@ package me.etwxr9.roguelike.commands;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -33,7 +34,10 @@ public class CmdNewWorld implements CommandInterface {
         //这个VoidChunkGenerator重写了generateChunkData方法，只会生成空区块。
         wc.generator(new VoidChunkGenerator());
         World newWorld = wc.createWorld();
-
+        newWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        newWorld.setGameRule(GameRule.DO_MOB_LOOT, false);
+        newWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        newWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         //传送玩家
         Player player = (Player) sender;
         player.sendMessage("生成完毕，正在传送");

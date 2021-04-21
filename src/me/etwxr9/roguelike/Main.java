@@ -7,12 +7,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.etwxr9.roguelike.commands.BaseCmd;
 import me.etwxr9.roguelike.commands.BaseTabCompleter;
+import me.etwxr9.roguelike.commands.CmdCopyRoom;
 import me.etwxr9.roguelike.commands.CmdCreateDungeon;
+import me.etwxr9.roguelike.commands.CmdDeleteRoom;
 import me.etwxr9.roguelike.commands.CmdDeleteWorld;
 import me.etwxr9.roguelike.commands.CmdDungeonInfo;
 import me.etwxr9.roguelike.commands.CmdEnterDungeon;
+import me.etwxr9.roguelike.commands.CmdNewRoom;
 import me.etwxr9.roguelike.commands.CmdNewWorld;
+import me.etwxr9.roguelike.commands.CmdRoomInfo;
 import me.etwxr9.roguelike.commands.CmdSetDefaultWorld;
+import me.etwxr9.roguelike.commands.CmdSetRoomInfo;
 import me.etwxr9.roguelike.commands.CommandHandler;
 import me.etwxr9.roguelike.dungeonutils.DungeonManager;
 
@@ -45,6 +50,11 @@ public class Main extends JavaPlugin{
         cmdHandler.register("deleteWorld", new CmdDeleteWorld());
         cmdHandler.register("enterDungeon", new CmdEnterDungeon());
         cmdHandler.register("dungeonInfo", new CmdDungeonInfo());
+        cmdHandler.register("deleteRoom", new CmdDeleteRoom());
+        cmdHandler.register("setRoomInfo", new CmdSetRoomInfo());
+        cmdHandler.register("roomInfo", new CmdRoomInfo());
+        cmdHandler.register("newRoom", new CmdNewRoom());
+        cmdHandler.register("copyRoom", new CmdCopyRoom());
         this.getCommand("rl").setExecutor(cmdHandler);
         this.getCommand("rl").setTabCompleter(new BaseTabCompleter());
 

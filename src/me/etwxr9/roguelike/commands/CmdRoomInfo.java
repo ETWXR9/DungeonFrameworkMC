@@ -1,5 +1,6 @@
 package me.etwxr9.roguelike.commands;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +20,16 @@ public class CmdRoomInfo implements CommandInterface {
         var di = DungeonManager.GetDungeonInfo(args[1]);
         Player p = (Player) sender;
         if (di == null) {
-            p.sendMessage(String.format("不存在地牢：{0}", di.World));
+            p.sendMessage(MessageFormat.format("不存在地牢：{0}", di.World));
             return true;
         }
-        p.sendMessage(String.format("查看地牢信息：{0}", di.World));
-        p.sendMessage(String.format("原点坐标：{0},{1},{2}", di.Origin[0], di.Origin[1], di.Origin[2]));
-        p.sendMessage(String.format("地牢大小：{0},{1},{2}", di.Size[0], di.Size[1], di.Size[2]));
-        p.sendMessage(String.format("单元大小：{0},{1},{2}", di.UnitSize[0], di.UnitSize[1], di.UnitSize[2]));
-        p.sendMessage(String.format("房间数量：{0}", di.Units.size()));
+        p.sendMessage(MessageFormat.format("查看地牢信息：{0}", di.World));
+        p.sendMessage(MessageFormat.format("原点坐标：{0},{1},{2}", di.Origin[0], di.Origin[1], di.Origin[2]));
+        p.sendMessage(MessageFormat.format("地牢大小：{0},{1},{2}", di.Size[0], di.Size[1], di.Size[2]));
+        p.sendMessage(MessageFormat.format("单元大小：{0},{1},{2}", di.UnitSize[0], di.UnitSize[1], di.UnitSize[2]));
+        p.sendMessage(MessageFormat.format("房间数量：{0}", di.Units.size()));
         di.Units.forEach(
-                d -> p.sendMessage(String.format("   房间名：{0}，房间类型：{1}，房间数量：{2}", d.Id, d.Type, d.Rooms.size())));
+                d -> p.sendMessage(MessageFormat.format("   房间名：{0}，房间类型：{1}，房间数量：{2}", d.Id, d.Type, d.Rooms.size())));
         return true;
     }
 
