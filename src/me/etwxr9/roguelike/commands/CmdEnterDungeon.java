@@ -1,12 +1,14 @@
 package me.etwxr9.roguelike.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.etwxr9.roguelike.Main;
 import me.etwxr9.roguelike.dungeonutils.DungeonManager;
 
 //玩家进入指定地牢，默认进入序号为0的房间
@@ -18,26 +20,40 @@ public class CmdEnterDungeon implements CommandInterface {
         var di = DungeonManager.GetDungeonInfo(args[1]);
         var dm = DungeonManager.GetDMbyPlayer(p);
 
+        if (di == null) {
+            p.sendMessage("地牢 " + args[1] + " 不存在");
+        }
         p.sendMessage("准备进入地牢" + args[1] + " " + di);
-        if (di != null) {
-            if (dm != null) {
-                dm.currentDungeon = di;
-                p.sendMessage("di.units.size=" + di.Units.size());
-                dm.currentRoom = di.Units.get(0);
-            } else {
-                dm = DungeonManager.NewDungeonManager(p, di, di.Units.get(0));
+        if (dm == null) {
+            dm = DungeonManager.NewDungeonManager(p, di, di.Units.get(0));
+        }
+        if (args.length == 2) {
+            DungeonManager.TeleportPlayerToRoom(dm, dm.currentDungeon, dm.currentRoom);
+        } else if (args.length == 3) {
+            var ri = di.GetRoom(args[2]);
+            if (ri == null) {
+                p.sendMessage("指定房间 " + args[2] + " 不存在");
+                return true;
             }
-            if (args.length == 2) {
-                DungeonManager.TeleportPlayerToRoom(p, dm.currentDungeon, dm.currentRoom);
-            } else if (args.length == 3) {
-                var ri = di.GetRoom(args[2]);
-                if (ri == null) {
-                    p.sendMessage("指定房间 "+args[2]+" 不存在");
-                    return true;
-                }
-                dm.currentRoom = ri;
-                DungeonManager.TeleportPlayerToRoom(p, dm.currentDungeon, dm.currentRoom);
+            DungeonManager.TeleportPlayerToRoom(dm, di, ri);
+        } else if (args.length == 4) {
+            var ri = di.GetRoom(args[2]);
+            if (ri == null) {
+                p.sendMessage("指定房间 " + args[2] + " 不存在");
+                return true;
             }
+            int index;
+            try {
+                index = Integer.parseInt(args[3]);
+            } catch (Exception e) {
+                return false;
+            }
+            if (ri.Rooms.size() <= index) {
+                p.sendMessage("该房间只有 " + ri.Rooms.size() + " 个副本");
+                return true;
+            }
+            DungeonManager.TeleportPlayerToRoom(dm, di, ri, index);
+            return true;
         } else {
             p.sendMessage("指定地牢不存在");
             return true;
@@ -65,6 +81,16 @@ public class CmdEnterDungeon implements CommandInterface {
                 di.Units.forEach(d -> names.add(d.Id));
                 return names;
             }
+        } else if (args.length == 4) {
+            var _di = DungeonManager.GetDungeonInfo(args[1]);
+            if (_di != null) {
+                var ri = _di.GetRoom(args[2]);
+                // Main.getInstance().getLogger().info("enterdungeon参数四:"+ri.Id);
+                if (ri != null) {
+                    return Arrays.asList(Integer.toString(ri.Rooms.size()));
+                }
+            }
+
         }
         return null;
     }

@@ -28,17 +28,14 @@ public class CmdSetRoomInfo implements CommandInterface {
             p.sendMessage("无当前地牢");
             return true;
         }
-        if (dm.currentDungeon == null) {
-            p.sendMessage("无当前地牢");
-            return true;
-        }
         if (dm.currentRoom == null) {
             p.sendMessage("无当前房间");
             return true;
         }
 
         var loc = p.getLocation();
-        var pos = new int[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() };
+        var roomOrigin = DungeonManager.GetPoint(dm.currentDungeon, dm.currentPosition, new int[]{0,0,0});
+        var pos = new int[] { loc.getBlockX()-roomOrigin[0], loc.getBlockY()-roomOrigin[1], loc.getBlockZ()-roomOrigin[2] };
         switch (args[1]) {
         case "enemyPosition":
             if (args.length != 3) {

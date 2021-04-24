@@ -2,6 +2,7 @@ package me.etwxr9.roguelike.commands;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.command.Command;
@@ -10,26 +11,35 @@ import org.bukkit.entity.Player;
 
 import me.etwxr9.roguelike.dungeonutils.DungeonManager;
 
-//查看当前地牢中指定Id的房间信息
+//查看当前地牢当前房间信息
 public class CmdRoomInfo implements CommandInterface {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (args.length != 2)
-            return false;
-        var di = DungeonManager.GetDungeonInfo(args[1]);
         Player p = (Player) sender;
-        if (di == null) {
-            p.sendMessage(MessageFormat.format("不存在地牢：{0}", di.World));
+        var dm = DungeonManager.GetDMbyPlayer(p);
+        if (dm == null) {
+            p.sendMessage("请进入一个房间");
             return true;
         }
-        p.sendMessage(MessageFormat.format("查看地牢信息：{0}", di.World));
-        p.sendMessage(MessageFormat.format("原点坐标：{0},{1},{2}", di.Origin[0], di.Origin[1], di.Origin[2]));
-        p.sendMessage(MessageFormat.format("地牢大小：{0},{1},{2}", di.Size[0], di.Size[1], di.Size[2]));
-        p.sendMessage(MessageFormat.format("单元大小：{0},{1},{2}", di.UnitSize[0], di.UnitSize[1], di.UnitSize[2]));
-        p.sendMessage(MessageFormat.format("房间数量：{0}", di.Units.size()));
-        di.Units.forEach(
-                d -> p.sendMessage(MessageFormat.format("   房间名：{0}，房间类型：{1}，房间数量：{2}", d.Id, d.Type, d.Rooms.size())));
+        if (dm.currentPosition == null) {
+            p.sendMessage("请进入一个房间");
+            return true;
+        }
+        var di = dm.currentDungeon;
+        var ri = dm.currentRoom;
+        var roomPos = dm.currentPosition;
+        
+        p.sendMessage(MessageFormat.format("查看房间信息：所属地牢：{0}， Id：{1}, 序号：{2}", di.World,ri.Id,ri.Rooms.indexOf(dm.currentPosition)));
+        p.sendMessage(MessageFormat.format("单元大小：{0}",Arrays.toString(di.UnitSize)));
+        p.sendMessage(MessageFormat.format("房间副本数量：{0}", ri.Rooms.size()));
+        p.sendMessage(MessageFormat.format("房间类型：{0}", ri.Type));
+        p.sendMessage(MessageFormat.format("玩家传送点：{0}",Arrays.toString(ri.PlayerPosition)));
+        p.sendMessage(MessageFormat.format("敌人生成点数量：{0}", ri.EnemyPosition.size()));
+        ri.EnemyPosition.forEach(pos->{
+            p.sendMessage(MessageFormat.format("敌人生成点坐标：{0}",Arrays.toString(pos)));
+        });
+        p.sendMessage(MessageFormat.format("房间通过条件：{0}", ri.Clear));
         return true;
     }
 

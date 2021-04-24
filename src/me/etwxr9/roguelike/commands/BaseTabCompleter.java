@@ -23,6 +23,7 @@ public class BaseTabCompleter implements TabCompleter {
             StringUtil.copyPartialMatches(args[0], Main.getInstance().cmdHandler.commandList(), completions);
             // sort the list
             Collections.sort(completions);
+            completions.remove("rl");
             return completions;
         } else {
             if (Main.getInstance().cmdHandler.getExecutor(args[0]) == null)return null;

@@ -18,6 +18,8 @@ import me.etwxr9.roguelike.commands.CmdNewWorld;
 import me.etwxr9.roguelike.commands.CmdRoomInfo;
 import me.etwxr9.roguelike.commands.CmdSetDefaultWorld;
 import me.etwxr9.roguelike.commands.CmdSetRoomInfo;
+import me.etwxr9.roguelike.commands.CmdSpawnEnemy;
+import me.etwxr9.roguelike.commands.CmdUpdateRoom;
 import me.etwxr9.roguelike.commands.CommandHandler;
 import me.etwxr9.roguelike.dungeonutils.DungeonManager;
 
@@ -50,11 +52,14 @@ public class Main extends JavaPlugin{
         cmdHandler.register("deleteWorld", new CmdDeleteWorld());
         cmdHandler.register("enterDungeon", new CmdEnterDungeon());
         cmdHandler.register("dungeonInfo", new CmdDungeonInfo());
+        cmdHandler.register("roomInfo", new CmdRoomInfo());
         cmdHandler.register("deleteRoom", new CmdDeleteRoom());
         cmdHandler.register("setRoomInfo", new CmdSetRoomInfo());
-        cmdHandler.register("roomInfo", new CmdRoomInfo());
+        // cmdHandler.register("roomInfo", new CmdRoomInfo());
         cmdHandler.register("newRoom", new CmdNewRoom());
         cmdHandler.register("copyRoom", new CmdCopyRoom());
+        cmdHandler.register("updateRoom", new CmdUpdateRoom());
+        cmdHandler.register("spawnEnemy", new CmdSpawnEnemy());
         this.getCommand("rl").setExecutor(cmdHandler);
         this.getCommand("rl").setTabCompleter(new BaseTabCompleter());
 
