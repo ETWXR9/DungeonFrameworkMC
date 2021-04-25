@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.dungeonutils;
+package me.etwxr9.Roguelike.DungeonUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
 
-import me.etwxr9.roguelike.Main;
+import me.etwxr9.Roguelike.Main;
 
 public class JsonIO {
     // 返回所有地牢数据名

@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
 import me.etwxr9.Roguelike.Command.BaseCmd;
 import me.etwxr9.Roguelike.Command.BaseTabCompleter;
 import me.etwxr9.Roguelike.Command.CmdCopyRoom;
@@ -21,7 +22,6 @@ import me.etwxr9.Roguelike.Command.CmdSetRoomInfo;
 import me.etwxr9.Roguelike.Command.CmdSpawnEnemy;
 import me.etwxr9.Roguelike.Command.CmdUpdateRoom;
 import me.etwxr9.Roguelike.Command.CommandHandler;
-import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
 
 public class Main extends JavaPlugin{
 

@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.dungeonutils;
+package me.etwxr9.Roguelike.DungeonUtil;
 
 import java.util.ArrayList;
 import java.util.List;

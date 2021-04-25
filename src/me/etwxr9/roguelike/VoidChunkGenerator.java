@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike;
+package me.etwxr9.Roguelike;
 
 import java.util.Random;
 
