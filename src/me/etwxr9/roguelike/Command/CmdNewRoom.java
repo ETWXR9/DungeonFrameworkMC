@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.commands;
+package me.etwxr9.Roguelike.Command;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.dungeonutils.DungeonManager;
+import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
 
 public class CmdNewRoom implements CommandInterface {
 
@@ -26,7 +26,7 @@ public class CmdNewRoom implements CommandInterface {
             p.sendMessage("请使用enterdungeon进入一个地牢");
             return true;
         }
-        var room =DungeonManager.NewDefaultRoom(p, dm.currentDungeon);
+        DungeonManager.NewDefaultRoom(p, dm.currentDungeon);
         return true;
     }
 

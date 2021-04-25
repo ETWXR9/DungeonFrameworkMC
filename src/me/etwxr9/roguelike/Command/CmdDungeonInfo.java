@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.commands;
+package me.etwxr9.Roguelike.Command;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.dungeonutils.DungeonManager;
+import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
 
 //查看指定名称的地牢信息，或者指定Id的房间信息
 public class CmdDungeonInfo implements CommandInterface {

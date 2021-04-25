@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.commands;
+package me.etwxr9.Roguelike.Command;
 
 import java.util.List;
 
@@ -6,9 +6,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.dungeonutils.DungeonInfo;
-import me.etwxr9.roguelike.dungeonutils.DungeonManager;
-import me.etwxr9.roguelike.dungeonutils.JsonIO;
+import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
+import me.etwxr9.Roguelike.DungeonUtil.JsonIO;
 
 public class CmdCreateDungeon implements CommandInterface {
 
@@ -48,7 +47,7 @@ public class CmdCreateDungeon implements CommandInterface {
         // }
         DungeonManager.LoadDungeons();
         //在0,0,0创建一个新房间，并传送玩家,设定当前房间
-        var room = DungeonManager.NewDefaultRoom(p, DungeonManager.GetDungeonInfo(worldName));
+        DungeonManager.NewDefaultRoom(p, DungeonManager.GetDungeonInfo(worldName));
         return true;
     }
 

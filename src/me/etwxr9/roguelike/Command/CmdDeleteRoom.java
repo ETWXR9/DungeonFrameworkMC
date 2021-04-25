@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.commands;
+package me.etwxr9.Roguelike.Command;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -8,10 +8,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.dungeonutils.DungeonInfo;
-import me.etwxr9.roguelike.dungeonutils.DungeonManager;
-import me.etwxr9.roguelike.dungeonutils.JsonIO;
-import me.etwxr9.roguelike.dungeonutils.RoomInfo;
+import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
+import me.etwxr9.Roguelike.DungeonUtil.RoomInfo;
 
 //根据第二个参数删除当前地牢内指定房间，根据第三个参数删除指定数量的房间，若位置全空则删除房间配置（参数为all则直接删除配置）
 public class CmdDeleteRoom implements CommandInterface {

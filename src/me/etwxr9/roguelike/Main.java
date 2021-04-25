@@ -1,27 +1,27 @@
-package me.etwxr9.roguelike;
+package me.etwxr9.Roguelike;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.etwxr9.roguelike.commands.BaseCmd;
-import me.etwxr9.roguelike.commands.BaseTabCompleter;
-import me.etwxr9.roguelike.commands.CmdCopyRoom;
-import me.etwxr9.roguelike.commands.CmdCreateDungeon;
-import me.etwxr9.roguelike.commands.CmdDeleteRoom;
-import me.etwxr9.roguelike.commands.CmdDeleteWorld;
-import me.etwxr9.roguelike.commands.CmdDungeonInfo;
-import me.etwxr9.roguelike.commands.CmdEnterDungeon;
-import me.etwxr9.roguelike.commands.CmdNewRoom;
-import me.etwxr9.roguelike.commands.CmdNewWorld;
-import me.etwxr9.roguelike.commands.CmdRoomInfo;
-import me.etwxr9.roguelike.commands.CmdSetDefaultWorld;
-import me.etwxr9.roguelike.commands.CmdSetRoomInfo;
-import me.etwxr9.roguelike.commands.CmdSpawnEnemy;
-import me.etwxr9.roguelike.commands.CmdUpdateRoom;
-import me.etwxr9.roguelike.commands.CommandHandler;
-import me.etwxr9.roguelike.dungeonutils.DungeonManager;
+import me.etwxr9.Roguelike.Command.BaseCmd;
+import me.etwxr9.Roguelike.Command.BaseTabCompleter;
+import me.etwxr9.Roguelike.Command.CmdCopyRoom;
+import me.etwxr9.Roguelike.Command.CmdCreateDungeon;
+import me.etwxr9.Roguelike.Command.CmdDeleteRoom;
+import me.etwxr9.Roguelike.Command.CmdDeleteWorld;
+import me.etwxr9.Roguelike.Command.CmdDungeonInfo;
+import me.etwxr9.Roguelike.Command.CmdEnterDungeon;
+import me.etwxr9.Roguelike.Command.CmdNewRoom;
+import me.etwxr9.Roguelike.Command.CmdNewWorld;
+import me.etwxr9.Roguelike.Command.CmdRoomInfo;
+import me.etwxr9.Roguelike.Command.CmdSetDefaultWorld;
+import me.etwxr9.Roguelike.Command.CmdSetRoomInfo;
+import me.etwxr9.Roguelike.Command.CmdSpawnEnemy;
+import me.etwxr9.Roguelike.Command.CmdUpdateRoom;
+import me.etwxr9.Roguelike.Command.CommandHandler;
+import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
 
 public class Main extends JavaPlugin{
 

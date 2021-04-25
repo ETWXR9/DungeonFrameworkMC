@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.commands;
+package me.etwxr9.Roguelike.Command;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +11,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.Main;
-import me.etwxr9.roguelike.VoidChunkGenerator;
+import me.etwxr9.Roguelike.Main;
+import me.etwxr9.Roguelike.VoidChunkGenerator;
 
 public class CmdNewWorld implements CommandInterface {
 

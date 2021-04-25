@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.commands;
+package me.etwxr9.Roguelike.Command;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.util.StringUtil;
 
-import me.etwxr9.roguelike.Main;
+import me.etwxr9.Roguelike.Main;
 
 public class BaseTabCompleter implements TabCompleter {
 

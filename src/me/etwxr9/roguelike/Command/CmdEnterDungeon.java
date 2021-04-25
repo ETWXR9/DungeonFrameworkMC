@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.commands;
+package me.etwxr9.Roguelike.Command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,8 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.Main;
-import me.etwxr9.roguelike.dungeonutils.DungeonManager;
+import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
 
 //玩家进入指定地牢，默认进入序号为0的房间
 public class CmdEnterDungeon implements CommandInterface {

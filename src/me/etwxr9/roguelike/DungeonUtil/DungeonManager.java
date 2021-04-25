@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.dungeonutils;
+package me.etwxr9.Roguelike.DungeonUtil;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -26,8 +26,8 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.Main;
-import me.etwxr9.roguelike.VoidChunkGenerator;
+import me.etwxr9.Roguelike.Main;
+import me.etwxr9.Roguelike.VoidChunkGenerator;
 
 //每个该对象和一个玩家绑定。管理所有DungeonInfo。
 public class DungeonManager {

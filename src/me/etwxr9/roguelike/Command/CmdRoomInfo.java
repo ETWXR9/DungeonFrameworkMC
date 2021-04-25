@@ -1,4 +1,4 @@
-package me.etwxr9.roguelike.commands;
+package me.etwxr9.Roguelike.Command;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.dungeonutils.DungeonManager;
+import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
 
 //查看当前地牢当前房间信息
 public class CmdRoomInfo implements CommandInterface {
@@ -28,7 +28,6 @@ public class CmdRoomInfo implements CommandInterface {
         }
         var di = dm.currentDungeon;
         var ri = dm.currentRoom;
-        var roomPos = dm.currentPosition;
         
         p.sendMessage(MessageFormat.format("查看房间信息：所属地牢：{0}， Id：{1}, 序号：{2}", di.World,ri.Id,ri.Rooms.indexOf(dm.currentPosition)));
         p.sendMessage(MessageFormat.format("单元大小：{0}",Arrays.toString(di.UnitSize)));
