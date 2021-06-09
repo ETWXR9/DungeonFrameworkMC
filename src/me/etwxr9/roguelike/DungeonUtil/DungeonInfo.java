@@ -1,9 +1,9 @@
-package me.etwxr9.Roguelike.DungeonUtil;
+package me.etwxr9.roguelike.DungeonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import me.etwxr9.Roguelike.Main;
+import me.etwxr9.roguelike.Main;
 
 public class DungeonInfo {
     public String World = "";

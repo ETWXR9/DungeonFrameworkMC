@@ -1,4 +1,4 @@
-package me.etwxr9.Roguelike.Command;
+package me.etwxr9.roguelike.Command;
 
 import java.util.ArrayList;
 import java.util.HashMap;

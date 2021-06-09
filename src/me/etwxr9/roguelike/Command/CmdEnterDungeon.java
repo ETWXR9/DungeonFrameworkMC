@@ -1,4 +1,4 @@
-package me.etwxr9.Roguelike.Command;
+package me.etwxr9.roguelike.Command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
+import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
 //玩家进入指定地牢，默认进入序号为0的房间
 public class CmdEnterDungeon implements CommandInterface {
@@ -24,7 +24,7 @@ public class CmdEnterDungeon implements CommandInterface {
         }
         p.sendMessage("准备进入地牢" + args[1] + " " + di);
         if (dm == null) {
-            dm = DungeonManager.NewDungeonManager(p, di, di.Units.get(0));
+            dm = DungeonManager.NewDungeonManager(p, di, di.Units.get(0), di.Units.get(0).Rooms.get(0));
         }
         if (args.length == 2) {
             DungeonManager.TeleportPlayerToRoom(dm, dm.currentDungeon, dm.currentRoom);

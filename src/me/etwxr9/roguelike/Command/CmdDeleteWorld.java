@@ -1,4 +1,4 @@
-package me.etwxr9.Roguelike.Command;
+package me.etwxr9.roguelike.Command;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.Roguelike.Main;
+import me.etwxr9.roguelike.Main;
 
 public class CmdDeleteWorld implements CommandInterface {
 

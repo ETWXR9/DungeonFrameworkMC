@@ -1,4 +1,4 @@
-package me.etwxr9.Roguelike.Command;
+package me.etwxr9.roguelike.Command;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
+import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
 //一个参数：房间数量
 public class CmdCopyRoom implements CommandInterface{

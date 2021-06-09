@@ -1,4 +1,4 @@
-package me.etwxr9.Roguelike.Command;
+package me.etwxr9.roguelike.Command;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class BaseCmd implements CommandInterface {
         // Because in our CommandHandler we are already checking if the sender's
         // instance is a player, we don't have to do it here.
         Player p = (Player) sender;
-        
+
         p.sendMessage("Example!");
         return false;
     }

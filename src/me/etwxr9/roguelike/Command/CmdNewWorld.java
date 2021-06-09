@@ -1,8 +1,9 @@
-package me.etwxr9.Roguelike.Command;
+package me.etwxr9.roguelike.Command;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -11,8 +12,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.Roguelike.Main;
-import me.etwxr9.Roguelike.VoidChunkGenerator;
+import me.etwxr9.roguelike.Main;
+import me.etwxr9.roguelike.VoidChunkGenerator;
 
 public class CmdNewWorld implements CommandInterface {
 
@@ -38,6 +39,7 @@ public class CmdNewWorld implements CommandInterface {
         newWorld.setGameRule(GameRule.DO_MOB_LOOT, false);
         newWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         newWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        newWorld.setDifficulty(Difficulty.HARD);
         //传送玩家
         Player player = (Player) sender;
         player.sendMessage("生成完毕，正在传送");

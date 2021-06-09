@@ -1,4 +1,4 @@
-package me.etwxr9.Roguelike.DungeonUtil;
+package me.etwxr9.roguelike.DungeonUtil;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -26,8 +26,8 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.Roguelike.Main;
-import me.etwxr9.Roguelike.VoidChunkGenerator;
+import me.etwxr9.roguelike.Main;
+import me.etwxr9.roguelike.VoidChunkGenerator;
 
 //每个该对象和一个玩家绑定。管理所有DungeonInfo。
 public class DungeonManager {
@@ -39,6 +39,25 @@ public class DungeonManager {
 
     private static List<DungeonManager> dmList = new ArrayList<DungeonManager>();
     private static List<DungeonInfo> diList = new ArrayList<DungeonInfo>();
+
+    // 取得空房间坐标
+    private static int[] GetEmptyRoom(DungeonInfo di) {
+
+        if (di.EmptyRoomList.size() == 0) {
+            return null;
+        }
+        return di.EmptyRoomList.get(0);
+    }
+
+    // 保存
+    public boolean SaveDungeon() {
+        try {
+            JsonIO.WriteFile(currentDungeon.World, JsonIO.Parsejson(currentDungeon));
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
 
     // 使用JsonIO的函数加载所有json文件并解析为DungeonInfo，加入diList，（可能功能：填充空房间列表），加载世界
     public static void LoadDungeons() {
@@ -69,7 +88,7 @@ public class DungeonManager {
     }
 
     // 新建DungeonManager
-    public static DungeonManager NewDungeonManager(Player p, DungeonInfo di, RoomInfo cr) {
+    public static DungeonManager NewDungeonManager(Player p, DungeonInfo di, RoomInfo cr, int[] roomPos) {
         var dm = GetDMbyPlayer(p);
         if (dm != null) {
             dm.currentDungeon = di;
@@ -81,6 +100,7 @@ public class DungeonManager {
         dm.player = p;
         dm.currentDungeon = di;
         dm.currentRoom = cr;
+        dm.currentPosition = roomPos;
         dmList.add(dm);
         return dm;
     }
@@ -153,7 +173,7 @@ public class DungeonManager {
         var y = origin[1] + newRoom.PlayerPosition[1];
         var z = origin[2] + newRoom.PlayerPosition[2];
         // 为该玩家设定DM
-        DungeonManager.NewDungeonManager(p, dungeon, newRoom);
+        DungeonManager.NewDungeonManager(p, dungeon, newRoom, point);
         p.teleport(new Location(p.getWorld(), x, y, z));
         return newRoom;
     }
@@ -243,14 +263,6 @@ public class DungeonManager {
 
     }
 
-    private static int[] GetEmptyRoom(DungeonInfo di) {
-
-        if (di.EmptyRoomList.size() == 0) {
-            return null;
-        }
-        return di.EmptyRoomList.get(0);
-    }
-
     // 返回对应DungeonInfo，没有则返回null
     public static DungeonInfo GetDungeonInfo(String worldName) {
         Main.getInstance().getLogger().info("准备遍历DI查找" + worldName);
@@ -303,16 +315,6 @@ public class DungeonManager {
     public static boolean SaveDungeon(DungeonInfo di) {
         try {
             JsonIO.WriteFile(di.World, JsonIO.Parsejson(di));
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-    }
-
-    // 保存
-    public boolean SaveDungeon() {
-        try {
-            JsonIO.WriteFile(currentDungeon.World, JsonIO.Parsejson(currentDungeon));
         } catch (IOException e) {
             return false;
         }

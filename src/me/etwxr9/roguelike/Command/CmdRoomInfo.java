@@ -1,4 +1,4 @@
-package me.etwxr9.Roguelike.Command;
+package me.etwxr9.roguelike.Command;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.Roguelike.DungeonUtil.DungeonManager;
+import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
 //查看当前地牢当前房间信息
 public class CmdRoomInfo implements CommandInterface {
