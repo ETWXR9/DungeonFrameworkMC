@@ -42,8 +42,9 @@ public class CmdSetRoomInfo implements CommandInterface {
                 switch (args[2]) {
                     case "set":
                         // 判断玩家是否在房间内
-                        if (pos[0] >= dm.currentDungeon.UnitSize[0] || pos[1] >= dm.currentDungeon.UnitSize[1]
-                                || pos[2] >= dm.currentDungeon.UnitSize[2]) {
+                        if ((pos[0] >= dm.currentDungeon.UnitSize[0] || pos[0] < 0)
+                                || (pos[1] >= dm.currentDungeon.UnitSize[1] || pos[1] < 0)
+                                || (pos[2] >= dm.currentDungeon.UnitSize[2] || pos[2] < 0)) {
                             p.sendMessage("当前位置超出房间范围");
                             break;
                         }
@@ -79,8 +80,9 @@ public class CmdSetRoomInfo implements CommandInterface {
                     switch (args[2]) {
                         case "set":
                             // 判断玩家是否在房间内
-                            if (pos[0] >= dm.currentDungeon.UnitSize[0] || pos[1] >= dm.currentDungeon.UnitSize[1]
-                                    || pos[2] >= dm.currentDungeon.UnitSize[2]) {
+                            if ((pos[0] >= dm.currentDungeon.UnitSize[0] || pos[0] < 0)
+                                    || (pos[1] >= dm.currentDungeon.UnitSize[1] || pos[1] < 0)
+                                    || (pos[2] >= dm.currentDungeon.UnitSize[2] || pos[2] < 0)) {
                                 p.sendMessage("当前位置超出房间范围");
                                 break;
                             }

@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 import me.etwxr9.roguelike.Game.DungeonGUI;
+import me.etwxr9.roguelike.Game.TourManager;
 import me.etwxr9.roguelike.Command.BaseCmd;
 import me.etwxr9.roguelike.Command.BaseTabCompleter;
 import me.etwxr9.roguelike.Command.CmdCopyRoom;
@@ -69,6 +70,7 @@ public class Main extends JavaPlugin {
 
         // 注册事件
         getServer().getPluginManager().registerEvents(new DungeonGUI(), this);
+        getServer().getPluginManager().registerEvents(new TourManager(), this);
 
         // 如果没有配置目录，创建。
         if (!Files.exists(Paths.get(getDataFolder() + "/"))) {

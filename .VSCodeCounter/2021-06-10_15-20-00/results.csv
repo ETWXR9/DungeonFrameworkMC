@@ -1,0 +1,34 @@
+"filename", "language", "YAML", "Java", "comment", "blank", "total"
+"d:\GameS\paper plugin\Roguelike\src\config.yml", "YAML", 0, 0, 0, 1, 1
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\BaseCmd.java", "Java", 0, 17, 3, 8, 28
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\BaseTabCompleter.java", "Java", 0, 25, 4, 7, 36
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdCopyRoom.java", "Java", 0, 36, 3, 8, 47
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdCreateDungeon.java", "Java", 0, 36, 13, 12, 61
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdDeleteRoom.java", "Java", 0, 87, 7, 12, 106
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdDeleteWorld.java", "Java", 0, 61, 4, 13, 78
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdDungeonInfo.java", "Java", 0, 72, 3, 11, 86
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdEnterDungeon.java", "Java", 0, 80, 6, 12, 98
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdGameTest.java", "Java", 0, 81, 6, 11, 98
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdNewRoom.java", "Java", 0, 30, 2, 8, 40
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdNewWorld.java", "Java", 0, 44, 6, 9, 59
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdRoomInfo.java", "Java", 0, 45, 2, 8, 55
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdSetDefaultWorld.java", "Java", 0, 33, 0, 10, 43
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdSetRoomInfo.java", "Java", 0, 134, 3, 13, 150
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdSpawnEnemy.java", "Java", 0, 47, 1, 8, 56
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CmdUpdateRoom.java", "Java", 0, 26, 1, 9, 36
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CommandHandler.java", "Java", 0, 47, 17, 19, 83
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Command\CommandInterface.java", "Java", 0, 8, 2, 4, 14
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\DungeonUtil\DungeonInfo.java", "Java", 0, 31, 2, 6, 39
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\DungeonUtil\DungeonManager.java", "Java", 0, 263, 26, 36, 325
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\DungeonUtil\JsonIO.java", "Java", 0, 55, 8, 10, 73
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\DungeonUtil\RoomInfo.java", "Java", 0, 15, 0, 4, 19
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Event\ClearListener.java", "Java", 0, 8, 0, 5, 13
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Event\EnterRoomEvent.java", "Java", 0, 56, 0, 17, 73
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Event\RoomClearEvent.java", "Java", 0, 33, 0, 13, 46
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Game\DungeonGUI.java", "Java", 0, 79, 7, 12, 98
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Game\DungeonTour.java", "Java", 0, 20, 6, 6, 32
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Game\TourManager.java", "Java", 0, 136, 6, 21, 163
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\Main.java", "Java", 0, 68, 7, 16, 91
+"d:\GameS\paper plugin\Roguelike\src\me\etwxr9\roguelike\VoidChunkGenerator.java", "Java", 0, 10, 1, 4, 15
+"d:\GameS\paper plugin\Roguelike\src\plugin.yml", "YAML", 8, 0, 0, 0, 8
+"Total", "-", 8, 1683, 146, 333, 2170

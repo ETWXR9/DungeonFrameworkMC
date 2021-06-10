@@ -1,5 +1,6 @@
 package me.etwxr9.roguelike.Command;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,8 +47,7 @@ public class CmdGameTest implements CommandInterface {
                     p.sendMessage("无当前关卡");
                     return true;
                 }
-                TourManager.GetTour(p).isClear = true;
-                p.sendMessage("关卡已clear");
+                TourManager.ClearRoom(TourManager.GetTour(p));
                 break;
             case "open":
                 if (TourManager.GetTour(p) == null) {
@@ -56,16 +56,28 @@ public class CmdGameTest implements CommandInterface {
                 }
                 var tour = TourManager.GetTour(p);
 
-                if (tour == null) {
-                    return true;
-                }
                 if (!tour.isClear) {
                     p.sendMessage("房间未CLEAR!");
                     return true;
                 }
                 p.openInventory(DungeonGUI.GetUI(TourManager.GetTour(p)));
                 break;
-
+            case "gameInfo":
+                if (TourManager.GetTour(p) == null) {
+                    p.sendMessage("无当前关卡");
+                    return true;
+                }
+                var tourInfo = TourManager.GetTour(p);
+                p.sendMessage("游戏信息");
+                p.sendMessage("当前Row " + tourInfo.row);
+                p.sendMessage("当前Pos " + tourInfo.pos);
+                p.sendMessage("当前房间 " + tourInfo.room.Id);
+                p.sendMessage("当前房间类型 " + tourInfo.room.Type);
+                p.sendMessage("当前敌人 " + tourInfo.EnemyList.size());
+                p.sendMessage("当前Clear " + tourInfo.isClear);
+                p.sendMessage("游戏信息打印完毕");
+                // p.sendMessage("当前Row " + tourInfo.row);
+                break;
             default:
                 return false;
         }
@@ -78,7 +90,7 @@ public class CmdGameTest implements CommandInterface {
         if (args.length != 2) {
             return null;
         }
-        return Arrays.asList("start", "open", "clear");
+        return Arrays.asList("start", "open", "clear", "end", "gameInfo");
 
     }
 
