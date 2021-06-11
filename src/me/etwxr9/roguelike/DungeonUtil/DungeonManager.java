@@ -52,7 +52,7 @@ public class DungeonManager {
     // 保存
     public boolean SaveDungeon() {
         try {
-            JsonIO.WriteFile(currentDungeon.World, JsonIO.Parsejson(currentDungeon));
+            DungeonJsonParser.WriteFile(currentDungeon.World, DungeonJsonParser.Parsejson(currentDungeon));
         } catch (IOException e) {
             return false;
         }
@@ -63,12 +63,12 @@ public class DungeonManager {
     public static void LoadDungeons() {
         diList = new ArrayList<DungeonInfo>();
 
-        var names = JsonIO.AllDungeonFileName();
+        var names = DungeonJsonParser.AllDungeonFileName();
         Main.getInstance().getLogger().info("读取地牢数据! names.length=" + names.size());
         names.forEach(n -> {
             try {
                 Main.getInstance().getLogger().info("读取地牢数据 " + n);
-                diList.add(JsonIO.ParseDungeonInfo(JsonIO.ReadFile(n)));
+                diList.add(DungeonJsonParser.ParseDungeonInfo(DungeonJsonParser.ReadFile(n)));
             } catch (Exception e) {
                 Main.getInstance().getLogger().info("读取全部地牢数据出错！ " + e.getMessage());
             }
@@ -314,7 +314,7 @@ public class DungeonManager {
     // 保存
     public static boolean SaveDungeon(DungeonInfo di) {
         try {
-            JsonIO.WriteFile(di.World, JsonIO.Parsejson(di));
+            DungeonJsonParser.WriteFile(di.World, DungeonJsonParser.Parsejson(di));
         } catch (IOException e) {
             return false;
         }

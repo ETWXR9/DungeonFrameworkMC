@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 import me.etwxr9.roguelike.Game.DungeonGUI;
+import me.etwxr9.roguelike.Game.EnemyManager;
 import me.etwxr9.roguelike.Game.TourManager;
 import me.etwxr9.roguelike.Command.BaseCmd;
 import me.etwxr9.roguelike.Command.BaseTabCompleter;
@@ -15,6 +16,7 @@ import me.etwxr9.roguelike.Command.CmdCreateDungeon;
 import me.etwxr9.roguelike.Command.CmdDeleteRoom;
 import me.etwxr9.roguelike.Command.CmdDeleteWorld;
 import me.etwxr9.roguelike.Command.CmdDungeonInfo;
+import me.etwxr9.roguelike.Command.CmdEnemyLoadTest;
 import me.etwxr9.roguelike.Command.CmdEnterDungeon;
 import me.etwxr9.roguelike.Command.CmdGameTest;
 import me.etwxr9.roguelike.Command.CmdNewRoom;
@@ -47,6 +49,8 @@ public class Main extends JavaPlugin {
         // 加载DungeonInfo
         DungeonManager.LoadDungeons();
         getLogger().info("读取地牢数据!");
+        EnemyManager.LoadEnemyData();
+        getLogger().info("读取敌人数据!");
         // 注册指令
         cmdHandler = new CommandHandler();
         cmdHandler.register("rl", new BaseCmd());
@@ -65,6 +69,7 @@ public class Main extends JavaPlugin {
         cmdHandler.register("updateRoom", new CmdUpdateRoom());
         cmdHandler.register("spawnEnemy", new CmdSpawnEnemy());
         cmdHandler.register("gameTest", new CmdGameTest());
+        cmdHandler.register("enemyLoadTest", new CmdEnemyLoadTest());
         this.getCommand("rl").setExecutor(cmdHandler);
         this.getCommand("rl").setTabCompleter(new BaseTabCompleter());
 

@@ -10,7 +10,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
-public class CmdSpawnEnemy implements CommandInterface{
+public class CmdSpawnEnemy implements CommandInterface {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -19,11 +19,12 @@ public class CmdSpawnEnemy implements CommandInterface{
             return false;
         }
         EntityType mob;
-        Player  p = (Player)sender;
+        Player p = (Player) sender;
         try {
             mob = EntityType.valueOf(args[1]);
+
         } catch (Exception e) {
-            p.sendMessage(args[1]+" 不存在");
+            p.sendMessage(args[1] + " 不存在");
             return false;
         }
         var dm = DungeonManager.GetDMbyPlayer(p);
@@ -31,10 +32,10 @@ public class CmdSpawnEnemy implements CommandInterface{
             p.sendMessage("请用enterdungeon进入房间");
             return true;
         }
-        dm.currentRoom.EnemyPosition.forEach(pos->{
+        dm.currentRoom.EnemyPosition.forEach(pos -> {
             var locpos = DungeonManager.GetPoint(dm.currentDungeon, dm.currentPosition, pos);
             p.getWorld().spawnEntity(new Location(p.getWorld(), locpos[0], locpos[1], locpos[2]), mob);
-            p.sendMessage("生成怪物"+mob.name()+" 于坐标"+locpos[0]+","+locpos[1]+","+ locpos[2]);
+            p.sendMessage("生成怪物" + mob.name() + " 于坐标" + locpos[0] + "," + locpos[1] + "," + locpos[2]);
         });
 
         return true;
@@ -46,10 +47,10 @@ public class CmdSpawnEnemy implements CommandInterface{
             return null;
         }
         var names = new ArrayList<String>();
-        for (EntityType et : EntityType.values()){
+        for (EntityType et : EntityType.values()) {
             names.add(et.name());
         }
         return names;
     }
-    
+
 }

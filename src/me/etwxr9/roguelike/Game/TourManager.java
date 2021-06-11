@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import com.sk89q.worldedit.util.SideEffect.State;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -117,13 +115,35 @@ public class TourManager implements Listener {
         // 生成敌人 房间锁住
         var world = Main.getInstance().getServer().getWorld(e.getdDungeonInfo().World);
 
-        e.getRoomInfo().EnemyPosition.forEach(pos -> {
-            var spawnPos = DungeonManager.GetPoint(e.getdDungeonInfo(), e.getRoomInfo().Rooms.get(e.getRoomIndex()),
-                    pos);
-            e.getDungeonTour().EnemyList.add(
-                    world.spawnEntity(new Location(world, spawnPos[0], spawnPos[1], spawnPos[2]), EntityType.ZOMBIE));
-        });
+        // e.getRoomInfo().EnemyPosition.forEach(pos -> {
+        // var spawnPos = DungeonManager.GetPoint(e.getdDungeonInfo(),
+        // e.getRoomInfo().Rooms.get(e.getRoomIndex()),
+        // pos);
+        // e.getDungeonTour().EnemyList.add(
+        // world.spawnEntity(new Location(world, spawnPos[0], spawnPos[1], spawnPos[2]),
+        // EntityType.ZOMBIE));
+        // });
 
+        // 随机抽取敌人组，循环遍历生成点进行逐个生成
+        var posIt = e.getRoomInfo().EnemyPosition.iterator();
+        Random r = new Random();
+        var enemyData = EnemyManager.Enemys
+                .get(EnemyManager.Enemys.keySet().toArray()[r.nextInt(EnemyManager.Enemys.size())]);
+
+        for (var id : enemyData.Enemys.keySet()) {
+            var num = enemyData.Enemys.get(id);
+            EntityType mob = EntityType.valueOf(id.toUpperCase());
+            for (int i = 0; i < num; i++) {
+                var spawnPos = DungeonManager.GetPoint(e.getdDungeonInfo(), e.getRoomInfo().Rooms.get(e.getRoomIndex()),
+                        posIt.next());
+                if (!posIt.hasNext()) {
+                    posIt = e.getRoomInfo().EnemyPosition.iterator();
+                }
+                var newEnemy = world.spawnEntity(new Location(world, spawnPos[0], spawnPos[1], spawnPos[2]), mob);
+                e.getDungeonTour().EnemyList.add(newEnemy);
+            }
+        }
+        e.getPlayer().sendMessage("生成怪物组 " + enemyData.Id);
         if (e.getRoomInfo().Type.equals("normal") || e.getRoomInfo().Type.equals("boss")) {
             e.getPlayer().sendMessage("此房间为战斗房间，锁住");
             e.getDungeonTour().isClear = false;

@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
-import me.etwxr9.roguelike.DungeonUtil.JsonIO;
+import me.etwxr9.roguelike.DungeonUtil.DungeonJsonParser;
 
 public class CmdCreateDungeon implements CommandInterface {
 
@@ -19,7 +19,7 @@ public class CmdCreateDungeon implements CommandInterface {
         Player p = (Player) sender;
         var worldName = p.getWorld().getName();
         try {
-            if (JsonIO.CreateFile(worldName, new int[] { 0, 0, 0 }, new int[] { 20, 10, 20 },
+            if (DungeonJsonParser.CreateFile(worldName, new int[] { 0, 0, 0 }, new int[] { 20, 10, 20 },
                     new int[] { 50, 20, 50 })) {
                 p.sendMessage("创建成功!");
             } else {
@@ -32,21 +32,20 @@ public class CmdCreateDungeon implements CommandInterface {
             return true;
         }
 
-
         p.sendMessage("开始读取刚创建的文件！");
         // DungeonInfo newDungeon = new DungeonInfo();
         // try {
-        //     var data = JsonIO.ReadFile(worldName);
-        //     // p.sendMessage("读取JSON内容为：" + data);
-        //     newDungeon = JsonIO.ParseDungeonInfo(data);
-        //     p.sendMessage("读取世界ID为：" + newDungeon.World);
-        //     p.sendMessage("读取世界Room数量为：" + newDungeon.Units.size());
+        // var data = JsonIO.ReadFile(worldName);
+        // // p.sendMessage("读取JSON内容为：" + data);
+        // newDungeon = JsonIO.ParseDungeonInfo(data);
+        // p.sendMessage("读取世界ID为：" + newDungeon.World);
+        // p.sendMessage("读取世界Room数量为：" + newDungeon.Units.size());
         // } catch (Exception e) {
-        //     p.sendMessage("读取文件出错： " + e.getMessage());
-        //     return true;
+        // p.sendMessage("读取文件出错： " + e.getMessage());
+        // return true;
         // }
         DungeonManager.LoadDungeons();
-        //在0,0,0创建一个新房间，并传送玩家,设定当前房间
+        // 在0,0,0创建一个新房间，并传送玩家,设定当前房间
         DungeonManager.NewDefaultRoom(p, DungeonManager.GetDungeonInfo(worldName));
         return true;
     }
