@@ -1,18 +1,27 @@
 package me.etwxr9.roguelike.DungeonUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RoomInfo {
-    public String Id;
-    public String Type;
-    public String Clear;
-    public int[] PlayerPosition;
-    public List<int[]> EnemyPosition;
-    public List<int[]> Rooms;
-
     public RoomInfo() {
-        EnemyPosition = new ArrayList<int[]>();
+    }
+
+    public RoomInfo(String dungeonId, String id, List<String> tags) {
+        DungeonId = dungeonId;
+        Id = id;
+        Tags = tags;
+        PlayerPosition = new int[3];
+        SpecialPositions = new HashMap<int[], String>();
         Rooms = new ArrayList<int[]>();
     }
+
+    public String DungeonId;
+    public String Id;
+    public List<String> Tags;
+    public int[] PlayerPosition;
+    public Map<int[], String> SpecialPositions;
+    public List<int[]> Rooms;
 }

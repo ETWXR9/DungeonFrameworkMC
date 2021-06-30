@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.etwxr9.roguelike.DungeonUtil.DungeonFileManager;
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 import me.etwxr9.roguelike.DungeonUtil.RoomInfo;
 
@@ -46,19 +47,22 @@ public class CmdDeleteRoom implements CommandInterface {
             // 判断是否全空
             if (count < ri.Rooms.size()) {
                 for (int i = 0; i < count; i++) {
-                    dm.currentDungeon.EmptyRoomList.add(dm.currentRoom.Rooms.get(1));
-                    ri.Rooms.remove(1);
+                    var max = ri.Rooms.size() - 1;
+                    dm.currentDungeon.EmptyRoomList.add(dm.currentRoom.Rooms.get(max - i));
+                    ri.Rooms.remove(max - i);
                     DungeonManager.TeleportPlayerToRoom(dm, dm.currentDungeon, dm.currentRoom);
                     p.sendMessage("执行删除操作，自动回到0号房间！");
                 }
-            } else {//全空，删除房间设置
+            } else {// 全空，删除房间设置
                 ri.Rooms.forEach(pos -> dm.currentDungeon.EmptyRoomList.add(pos));
                 dm.currentDungeon.Units.remove(ri);
+                DungeonFileManager.DeleteRoomFile(ri.DungeonId, ri.Id);
                 p.sendMessage("该房间已经删除，请使用enterdungeon重新进入一个房间！");
             }
-        } else {//all，删除房间设置
+        } else {// all，删除房间设置
             ri.Rooms.forEach(pos -> dm.currentDungeon.EmptyRoomList.add(pos));
             dm.currentDungeon.Units.remove(ri);
+            DungeonFileManager.DeleteRoomFile(ri.DungeonId, ri.Id);
             p.sendMessage("该房间已经删除，请使用enterdungeon重新进入一个房间！");
         }
         // 排序emptyroom
@@ -88,6 +92,9 @@ public class CmdDeleteRoom implements CommandInterface {
             return null;
         Player p = (Player) sender;
         DungeonManager dm = DungeonManager.GetDMbyPlayer(p);
+        if (dm == null) {
+            return null;
+        }
         if (dm.currentRoom == null) {
             return null;
         }

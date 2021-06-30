@@ -71,7 +71,7 @@ public class CmdEnterDungeon implements CommandInterface {
             // sender.sendMessage("tab enterdungeon " + dis.get(0));
             // sender.sendMessage("tab enterdungeon " + dis.get(0).World);
             var names = new ArrayList<String>();
-            dis.forEach(d -> names.add(d.World));
+            dis.forEach(d -> names.add(d.Id));
             return names;
         } else if (args.length == 3) {
             var di = DungeonManager.GetDungeonInfo(args[1]);

@@ -7,26 +7,36 @@ import java.util.Map;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
 import me.etwxr9.roguelike.DungeonUtil.DungeonInfo;
 import me.etwxr9.roguelike.DungeonUtil.RoomInfo;
 
 public class DungeonTour {
-    // 一个map储存一行9个房间
-    // 一个map储存7行，为一个地牢层
-    public Map<Integer, Map<Integer, RoomInfo>> DungeonLevel = new HashMap<Integer, Map<Integer, RoomInfo>>();
-    public Player player;
+    public List<Player> player;
 
     public DungeonInfo dungeon;
+
+    public DungeonTour() {
+        this.player = new ArrayList<Player>();
+        this.luaMap = new HashMap<String, LuaValue>();
+        this.global = JsePlatform.standardGlobals();
+    }
+
     public RoomInfo room;
-    public int[] roomPosition;
-    public int row;
-    public int pos;
-    public List<Entity> EnemyList = new ArrayList<Entity>();
-    public boolean isClear;
+    public int roomIndex;
+    public Map<String, LuaValue> luaMap;
+    public Globals global;
+
+    public int[] GetRoomPosition() {
+        return room.Rooms.get(roomIndex);
+    }
+
+    public Player GetFirstPlayer() {
+        return player.get(0);
+    }
 
 }
-// 一个dungeontour管理类
-// 创建tour逻辑
-// 需要一个取得所有房间的方法，以及从中筛选特定type/id的房间集合。
-// 需要一个将房间加入行的方法，并且管理不同类型房间出现频率。

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,17 +29,21 @@ public class CmdRoomInfo implements CommandInterface {
         }
         var di = dm.currentDungeon;
         var ri = dm.currentRoom;
-        
-        p.sendMessage(MessageFormat.format("查看房间信息：所属地牢：{0}， Id：{1}, 序号：{2}", di.World,ri.Id,ri.Rooms.indexOf(dm.currentPosition)));
-        p.sendMessage(MessageFormat.format("单元大小：{0}",Arrays.toString(di.UnitSize)));
+
+        p.sendMessage(MessageFormat.format("§b查看房间信息：所属地牢：{0}， Id：{1}, 序号：{2}", di.Id, ri.Id,
+                ri.Rooms.indexOf(dm.currentPosition)));
+        p.sendMessage(MessageFormat.format("单元大小：{0}", Arrays.toString(di.UnitSize)));
         p.sendMessage(MessageFormat.format("房间副本数量：{0}", ri.Rooms.size()));
-        p.sendMessage(MessageFormat.format("房间类型：{0}", ri.Type));
-        p.sendMessage(MessageFormat.format("玩家传送点：{0}",Arrays.toString(ri.PlayerPosition)));
-        p.sendMessage(MessageFormat.format("敌人生成点数量：{0}", ri.EnemyPosition.size()));
-        ri.EnemyPosition.forEach(pos->{
-            p.sendMessage(MessageFormat.format("敌人生成点坐标：{0}",Arrays.toString(pos)));
+        p.sendMessage("房间Tag：");
+        ri.Tags.forEach(t -> {
+            p.sendMessage("    " + t);
         });
-        p.sendMessage(MessageFormat.format("房间通过条件：{0}", ri.Clear));
+        p.sendMessage("特殊点：");
+        ri.SpecialPositions.forEach((k, v) -> {
+            p.sendMessage("    " + Arrays.toString(k) + ":" + v);
+        });
+        p.sendMessage(MessageFormat.format("玩家传送点：{0}", Arrays.toString(ri.PlayerPosition)));
+        p.sendMessage("§b房间信息打印完毕");
         return true;
     }
 
@@ -48,7 +53,7 @@ public class CmdRoomInfo implements CommandInterface {
         if (args.length != 2)
             return null;
         var names = new ArrayList<String>();
-        DungeonManager.GetDIList().forEach(d -> names.add(d.World));
+        DungeonManager.GetDIList().forEach(d -> names.add(d.Id));
         return names;
     }
 

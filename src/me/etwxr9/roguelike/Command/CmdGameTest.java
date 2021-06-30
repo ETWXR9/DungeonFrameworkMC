@@ -1,6 +1,5 @@
 package me.etwxr9.roguelike.Command;
 
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,8 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
-import me.etwxr9.roguelike.Game.DungeonGUI;
+// import me.etwxr9.roguelike.Game.DungeonGUI;
 import me.etwxr9.roguelike.Game.TourManager;
 
 public class CmdGameTest implements CommandInterface {
@@ -30,8 +28,7 @@ public class CmdGameTest implements CommandInterface {
                     p.sendMessage("当前已经存在游戏！");
                     break;
                 }
-                var newtour = TourManager.NewTour(p, DungeonManager.GetDIList().get(0).World);
-                p.openInventory(DungeonGUI.GetUI(newtour));
+                TourManager.NewTour(p);
                 break;
             case "end":
                 // 是否已经存在游戏
@@ -42,26 +39,6 @@ public class CmdGameTest implements CommandInterface {
                 TourManager.Tours.remove(p);
                 p.sendMessage("当前游戏结束！");
                 break;
-            case "clear":
-                if (TourManager.GetTour(p) == null) {
-                    p.sendMessage("无当前关卡");
-                    return true;
-                }
-                TourManager.ClearRoom(TourManager.GetTour(p));
-                break;
-            case "open":
-                if (TourManager.GetTour(p) == null) {
-                    p.sendMessage("无当前关卡");
-                    return true;
-                }
-                var tour = TourManager.GetTour(p);
-
-                if (!tour.isClear) {
-                    p.sendMessage("房间未CLEAR!");
-                    return true;
-                }
-                p.openInventory(DungeonGUI.GetUI(TourManager.GetTour(p)));
-                break;
             case "gameInfo":
                 if (TourManager.GetTour(p) == null) {
                     p.sendMessage("无当前关卡");
@@ -69,12 +46,7 @@ public class CmdGameTest implements CommandInterface {
                 }
                 var tourInfo = TourManager.GetTour(p);
                 p.sendMessage("游戏信息");
-                p.sendMessage("当前Row " + tourInfo.row);
-                p.sendMessage("当前Pos " + tourInfo.pos);
-                p.sendMessage("当前房间 " + tourInfo.room.Id);
-                p.sendMessage("当前房间类型 " + tourInfo.room.Type);
-                p.sendMessage("当前敌人 " + tourInfo.EnemyList.size());
-                p.sendMessage("当前Clear " + tourInfo.isClear);
+                p.sendMessage(" 当前房间 " + tourInfo.room.Id);
                 p.sendMessage("游戏信息打印完毕");
                 // p.sendMessage("当前Row " + tourInfo.row);
                 break;
@@ -90,7 +62,7 @@ public class CmdGameTest implements CommandInterface {
         if (args.length != 2) {
             return null;
         }
-        return Arrays.asList("start", "open", "clear", "end", "gameInfo");
+        return Arrays.asList("start", "gameInfo", "end");
 
     }
 

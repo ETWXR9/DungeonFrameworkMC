@@ -9,9 +9,9 @@ import me.etwxr9.roguelike.DungeonUtil.RoomInfo;
 import me.etwxr9.roguelike.Game.DungeonTour;
 import me.etwxr9.roguelike.Game.TourManager;
 
-public class EnterRoomEvent extends Event {
+public class LeaveRoomEvent extends Event {
 
-    public EnterRoomEvent(DungeonTour tour, DungeonInfo di, RoomInfo ri, int roomIndex, Player player) {
+    public LeaveRoomEvent(DungeonTour tour, DungeonInfo di, RoomInfo ri, int roomIndex, Player player) {
         this.dt = tour;
         this.di = di;
         this.ri = ri;
@@ -29,7 +29,7 @@ public class EnterRoomEvent extends Event {
         return dt;
     }
 
-    public DungeonInfo getdDungeonInfo() {
+    public DungeonInfo getDungeonInfo() {
         return di;
     }
 
@@ -55,5 +55,4 @@ public class EnterRoomEvent extends Event {
     public static HandlerList getHandlerList() {
         return HANDLERS;
     }
-
 }

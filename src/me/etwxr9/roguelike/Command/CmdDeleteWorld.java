@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.etwxr9.roguelike.Main;
+import me.etwxr9.roguelike.DungeonUtil.DungeonFileManager;
 
 public class CmdDeleteWorld implements CommandInterface {
 
@@ -23,29 +24,27 @@ public class CmdDeleteWorld implements CommandInterface {
             return true;
         }
 
-        var worldName = args[1];
-        var worldFolder = Main.getInstance().getServer().getWorld(worldName).getWorldFolder();
+        var id = args[1];
+        var worldFolder = Main.getInstance().getServer().getWorld(id).getWorldFolder();
 
         // 传送玩家至默认世界
-        List<Player> players = Main.getInstance().getServer().getWorld(worldName).getPlayers();
+        List<Player> players = Main.getInstance().getServer().getWorld(id).getPlayers();
         players.forEach((e) -> e.teleport(Main.getInstance().getServer().getWorld(defalutWorld).getSpawnLocation()));
         // p.teleport(Main.getInstance().getServer().getWorld(defalutWorld).getSpawnLocation());
         // 卸载世界
-        Main.getInstance().getServer().unloadWorld(worldName, false);
+        Main.getInstance().getServer().unloadWorld(id, false);
         // 删除
         if (!deleteWorld(worldFolder))
             p.sendMessage("删除世界过程出错！");
 
-        var path = new File(Main.getInstance().getDataFolder() + "/" + worldName + ".json");
-        if (path.isFile()) {
-            if (path.delete()) {
-                p.sendMessage("地牢文件已经删除！");
-            } else {
-                p.sendMessage("地牢文件删除失败！");
-            }
+        // var path = new File(Main.getInstance().getDataFolder().getAbsolutePath() +
+        // "/Dungeon/" + id + ".json");
+        if (DungeonFileManager.DeleteDungeonFile(id)) {
+            p.sendMessage("地牢文件已经删除！");
         } else {
-            p.sendMessage("该世界不存在地牢文件！");
+            p.sendMessage("地牢文件删除失败！");
         }
+
         p.sendMessage("删除结束");
         return true;
     }
@@ -63,7 +62,6 @@ public class CmdDeleteWorld implements CommandInterface {
         }
         return (path.delete());
     }
-
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {

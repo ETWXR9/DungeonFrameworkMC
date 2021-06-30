@@ -10,20 +10,20 @@ import org.bukkit.entity.Player;
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
 //一个参数：房间数量
-public class CmdCopyRoom implements CommandInterface{
+public class CmdCopyRoom implements CommandInterface {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         // TODO Auto-generated method stub
-        if (args.length!=2) {
+        if (args.length != 2) {
             return false;
         }
-        Player p = (Player)sender;
+        Player p = (Player) sender;
         int count;
         try {
-            count = Integer.parseInt(args[1]); 
+            count = Integer.parseInt(args[1]);
         } catch (Exception e) {
-            //TODO: handle exception
+            // TODO: handle exception
             e.printStackTrace();
             return false;
         }
@@ -37,10 +37,10 @@ public class CmdCopyRoom implements CommandInterface{
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length!=2) {
+        if (args.length != 2) {
             return null;
         }
         return Arrays.asList("<count>");
     }
-    
+
 }

@@ -8,16 +8,17 @@ import org.bukkit.entity.Player;
 
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
-public class CmdUpdateRoom implements CommandInterface{
+public class CmdUpdateRoom implements CommandInterface {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        Player p = (Player)sender;
+        Player p = (Player) sender;
         DungeonManager dm = DungeonManager.GetDMbyPlayer(p);
-        if ( dm == null) {
+        if (dm == null) {
             p.sendMessage("请用enterdungeon进入一个地牢");
             return true;
-        }if (dm.currentRoom == null) {
+        }
+        if (dm.currentRoom == null) {
             p.sendMessage("请用enterdungeon进入一个地牢");
             return true;
         }
@@ -31,5 +32,5 @@ public class CmdUpdateRoom implements CommandInterface{
         // TODO Auto-generated method stub
         return null;
     }
-    
+
 }

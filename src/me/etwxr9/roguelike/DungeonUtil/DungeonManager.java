@@ -19,6 +19,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -52,7 +53,11 @@ public class DungeonManager {
     // 保存
     public boolean SaveDungeon() {
         try {
-            DungeonJsonParser.WriteFile(currentDungeon.World, DungeonJsonParser.Parsejson(currentDungeon));
+            DungeonFileManager.WriteDungeonFile(currentDungeon.Id, DungeonFileManager.Parsejson(currentDungeon));
+            var rs = currentDungeon.Units;
+            for (RoomInfo ri : rs) {
+                DungeonFileManager.WriteRoomFile(ri);
+            }
         } catch (IOException e) {
             return false;
         }
@@ -62,29 +67,64 @@ public class DungeonManager {
     // 使用JsonIO的函数加载所有json文件并解析为DungeonInfo，加入diList，（可能功能：填充空房间列表），加载世界
     public static void LoadDungeons() {
         diList = new ArrayList<DungeonInfo>();
-
-        var names = DungeonJsonParser.AllDungeonFileName();
-        Main.getInstance().getLogger().info("读取地牢数据! names.length=" + names.size());
+        var names = DungeonFileManager.AllDungeonFileName();
+        if (names == null) {
+            return;
+        }
+        Main.getInstance().getLogger().info("读取地牢数据数量" + names.size());
         names.forEach(n -> {
             try {
                 Main.getInstance().getLogger().info("读取地牢数据 " + n);
-                diList.add(DungeonJsonParser.ParseDungeonInfo(DungeonJsonParser.ReadFile(n)));
+                LoadDungeon(n);
             } catch (Exception e) {
-                Main.getInstance().getLogger().info("读取全部地牢数据出错！ " + e.getMessage());
+                Main.getInstance().getLogger().info("读取地牢数据出错！ " + e.getMessage());
             }
         });
-        diList.forEach(d -> {
-            WorldCreator wc = new WorldCreator(d.World);
-            wc.generateStructures(false);
+    }
 
-            // 这个VoidChunkGenerator重写了generateChunkData方法，只会生成空区块。
-            wc.generator(new VoidChunkGenerator());
-            World newWorld = wc.createWorld();
-            newWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-            newWorld.setGameRule(GameRule.DO_MOB_LOOT, false);
-            newWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-            newWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-        });
+    public static void LoadDungeon(String id) {
+        // 读取地牢json、房间json、合并
+        DungeonInfo di;
+        try {
+            di = DungeonFileManager.ParseDungeonInfo(DungeonFileManager.ReadDungeonFile(id));
+            var rooms = DungeonFileManager.AllRoomFileName(id);
+            di.initEmptyRoomList();
+            // Main.getInstance().getLogger().info("读取所有房间，数量为" + rooms.size());
+            rooms.forEach(r -> {
+                try {
+                    var room = DungeonFileManager.ParseRoomInfo(DungeonFileManager.ReadRoomFile(id, r));
+                    di.Units.add(room);
+                    room.Rooms.forEach(pos -> {
+                        // Main.getInstance().getLogger().info("读取房间位置为" + pos[0] + "," + pos[1] + "," +
+                        // pos[2]);
+                        if (di.EmptyRoomList.removeIf(p -> Arrays.equals(p, pos))) {
+                            pos.equals(pos);
+                        }
+                    });
+                } catch (IOException e) {
+                    Main.getInstance().getLogger().info("读取房间数据出错！ " + e.getMessage());
+                    return;
+                }
+
+            });
+            diList.add(di);
+        } catch (IOException e) {
+            Main.getInstance().getLogger().info("读取地牢数据出错！ " + e.getMessage());
+            return;
+        }
+
+        WorldCreator wc = new WorldCreator(id);
+        wc.generateStructures(false);
+        // 这个VoidChunkGenerator重写了generateChunkData方法，只会生成空区块。
+        wc.generator(new VoidChunkGenerator());
+        World newWorld = wc.createWorld();
+        newWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        newWorld.setGameRule(GameRule.DO_MOB_LOOT, false);
+        newWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        newWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        newWorld.setGameRule(GameRule.MOB_GRIEFING, false);
+        newWorld.setDifficulty(Difficulty.HARD);
+
     }
 
     // 新建DungeonManager
@@ -115,7 +155,7 @@ public class DungeonManager {
     }
 
     // 给出指定原点坐标和房间大小，填充房间四壁为石头。
-    public static void FillDefaultRoom(Player p, int[] origin, int[] size) {
+    public static void FillDefaultRoom(World w, int[] origin, int[] size) {
         for (int z = 0; z < size[2]; z++) {
             for (int y = 0; y < size[1]; y++) {
                 for (int x = 0; x < size[0]; x++) {
@@ -123,7 +163,9 @@ public class DungeonManager {
                     int blockY = origin[1] + y;
                     int blockZ = origin[2] + z;
                     if (x * y * z == 0 || x == size[0] - 1 || y == size[1] - 1 || z == size[2] - 1) {
-                        p.getWorld().getBlockAt(blockX, blockY, blockZ).setType(Material.STONE);
+                        w.getBlockAt(blockX, blockY, blockZ).setType(Material.STONE);
+                    } else {
+                        w.getBlockAt(blockX, blockY, blockZ).setType(Material.AIR);
                     }
                 }
             }
@@ -142,9 +184,13 @@ public class DungeonManager {
         }
         var p = dm.player;
         var point = GetPoint(dungeon, room.Rooms.get(index), room.PlayerPosition);
-        var world = Bukkit.getWorld(dungeon.World);
+        var world = Bukkit.getWorld(dungeon.Id);
         p.sendMessage(MessageFormat.format("准备传送至地牢世界：{0}， 房间Id：{1}， 序号：{2}", world.getName(), room.Id, index));
-        if (p.teleport(new Location(world, point[0], point[1], point[2]))) {
+
+        p.sendMessage(MessageFormat.format("y的地牢原点：{0}，房间规模 {1}， 房间位置{2}，出生点{3}", dungeon.Origin[1],
+                dungeon.UnitSize[1], room.Rooms.get(index)[1], room.PlayerPosition[1]));
+        if (p.teleport(new Location(world, point[0] + 0.5, point[1] + 0.5, point[2] + 0.5))) {
+            p.sendMessage(MessageFormat.format("准备传送至：{0}， {1}， {2}", point[0], point[1], point[2]));
             dm.currentDungeon = dungeon;
             dm.currentRoom = room;
             dm.currentPosition = room.Rooms.get(index);
@@ -157,24 +203,33 @@ public class DungeonManager {
     // 新建房间并传送玩家
     public static RoomInfo NewDefaultRoom(Player p, DungeonInfo dungeon) {
         var point = GetEmptyRoom(dungeon);
-        RoomInfo newRoom = new RoomInfo();
-        newRoom.Id = "default";
+        p.sendMessage("创建默认房间，GetEmptyRoom为 " + point[0] + "," + point[1] + "," + point[2]);
+        RoomInfo newRoom = new RoomInfo(dungeon.Id, "default", new ArrayList<String>());
         newRoom.Rooms.add(point);
         newRoom.PlayerPosition = new int[] { 1, 1, 1 };
+        try {
+            DungeonFileManager.CreateRoomFile(newRoom);
+        } catch (IOException e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
         dungeon.EmptyRoomList.remove(point);
         dungeon.Units.add(newRoom);
         if (!SaveDungeon(dungeon))
-            p.sendMessage("保存地牢 " + dungeon.World + ".json 文件时出错！");
+            p.sendMessage("保存地牢 " + dungeon.Id + ".json 文件时出错！");
 
         var roomSize = dungeon.UnitSize;
         var origin = new int[] { point[0] * roomSize[0], point[1] * roomSize[1], point[2] * roomSize[2] };
-        FillDefaultRoom(p, origin, roomSize);
-        var x = origin[0] + newRoom.PlayerPosition[0];
-        var y = origin[1] + newRoom.PlayerPosition[1];
-        var z = origin[2] + newRoom.PlayerPosition[2];
+        FillDefaultRoom(Main.getInstance().getServer().getWorld(dungeon.Id), origin, roomSize);
+        // var x = origin[0] + newRoom.PlayerPosition[0];
+        // var y = origin[1] + newRoom.PlayerPosition[1];
+        // var z = origin[2] + newRoom.PlayerPosition[2];
         // 为该玩家设定DM
-        DungeonManager.NewDungeonManager(p, dungeon, newRoom, point);
-        p.teleport(new Location(p.getWorld(), x, y, z));
+        var dm = DungeonManager.NewDungeonManager(p, dungeon, newRoom, point);
+        TeleportPlayerToRoom(dm, dungeon, newRoom);
+        // p.teleport(new Location(p.getWorld(), x, y, z));
         return newRoom;
     }
 
@@ -203,6 +258,7 @@ public class DungeonManager {
                     region.getMinimumPoint());
             // configure here
             try {
+                forwardExtentCopy.setCopyingEntities(false);
                 Operations.complete(forwardExtentCopy);
             } catch (WorldEditException e) {
                 // TODO Auto-generated catch block
@@ -258,7 +314,7 @@ public class DungeonManager {
             p.sendMessage("全部复制完毕");
         }
 
-        Bukkit.getWorld(dm.currentDungeon.World).save();
+        Bukkit.getWorld(dm.currentDungeon.Id).save();
         p.sendMessage("世界已保存");
 
     }
@@ -267,9 +323,9 @@ public class DungeonManager {
     public static DungeonInfo GetDungeonInfo(String worldName) {
         Main.getInstance().getLogger().info("准备遍历DI查找" + worldName);
         for (DungeonInfo d : diList) {
-            Main.getInstance().getLogger().info("遍历DI中：" + d.World);
-            if (worldName.equals(d.World)) {
-                Main.getInstance().getLogger().info("遍历DI" + d.World + " 匹配");
+            Main.getInstance().getLogger().info("遍历DI中：" + d.Id);
+            if (worldName.equals(d.Id)) {
+                Main.getInstance().getLogger().info("遍历DI" + d.Id + " 匹配");
                 return d;
             }
         }
@@ -298,6 +354,7 @@ public class DungeonManager {
         var x = di.Origin[0] + di.UnitSize[0] * roomPos[0] + roomPoint[0];
         var y = di.Origin[1] + di.UnitSize[1] * roomPos[1] + roomPoint[1];
         var z = di.Origin[2] + di.UnitSize[2] * roomPos[2] + roomPoint[2];
+
         return new int[] { x, y, z };
     }
 
@@ -314,7 +371,10 @@ public class DungeonManager {
     // 保存
     public static boolean SaveDungeon(DungeonInfo di) {
         try {
-            DungeonJsonParser.WriteFile(di.World, DungeonJsonParser.Parsejson(di));
+            DungeonFileManager.WriteDungeonFile(di.Id, DungeonFileManager.Parsejson(di));
+            for (RoomInfo ri : di.Units) {
+                DungeonFileManager.WriteRoomFile(ri);
+            }
         } catch (IOException e) {
             return false;
         }
