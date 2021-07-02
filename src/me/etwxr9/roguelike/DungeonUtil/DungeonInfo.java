@@ -11,8 +11,8 @@ public class DungeonInfo {
         Tags = tags;
         Origin = origin;
         Size = size;
-        UnitSize = unitSize;
-        Units = new ArrayList<RoomInfo>();
+        RoomSize = unitSize;
+        Rooms = new ArrayList<RoomInfo>();
         EmptyRoomList = new ArrayList<int[]>();
     }
 
@@ -23,8 +23,8 @@ public class DungeonInfo {
     public List<String> Tags;
     public int[] Origin = new int[3];
     public int[] Size = new int[3];
-    public int[] UnitSize = new int[3];
-    public List<RoomInfo> Units = new ArrayList<RoomInfo>();
+    public int[] RoomSize = new int[3];
+    public List<RoomInfo> Rooms = new ArrayList<RoomInfo>();
     public List<int[]> EmptyRoomList = new ArrayList<int[]>();
 
     // 构造函数填充EmptyRoomList
@@ -41,11 +41,12 @@ public class DungeonInfo {
 
     // 返回指定ID的房间
     public RoomInfo GetRoom(String id) {
-        for (RoomInfo r : Units) {
+        for (RoomInfo r : Rooms) {
             if (r.Id.equals(id)) {
                 return r;
             }
         }
         return null;
     }
+
 }

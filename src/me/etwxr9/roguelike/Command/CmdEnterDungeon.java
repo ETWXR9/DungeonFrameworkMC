@@ -16,18 +16,22 @@ public class CmdEnterDungeon implements CommandInterface {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         Player p = (Player) sender;
+        if (args.length < 2) {
+            return false;
+        }
         var di = DungeonManager.GetDungeonInfo(args[1]);
         var dm = DungeonManager.GetDMbyPlayer(p);
 
         if (di == null) {
             p.sendMessage("地牢 " + args[1] + " 不存在");
+            return true;
         }
         p.sendMessage("准备进入地牢" + args[1] + " " + di);
         if (dm == null) {
-            dm = DungeonManager.NewDungeonManager(p, di, di.Units.get(0), di.Units.get(0).Rooms.get(0));
+            dm = DungeonManager.NewDungeonManager(p, di, di.Rooms.get(0), di.Rooms.get(0).Rooms.get(0));
         }
         if (args.length == 2) {
-            DungeonManager.TeleportPlayerToRoom(dm, dm.currentDungeon, dm.currentRoom);
+            DungeonManager.TeleportPlayerToRoom(dm, dm.currentDungeon, dm.currentDungeon.Rooms.get(0));
         } else if (args.length == 3) {
             var ri = di.GetRoom(args[2]);
             if (ri == null) {
@@ -77,7 +81,7 @@ public class CmdEnterDungeon implements CommandInterface {
             var di = DungeonManager.GetDungeonInfo(args[1]);
             if (di != null) {
                 var names = new ArrayList<String>();
-                di.Units.forEach(d -> names.add(d.Id));
+                di.Rooms.forEach(d -> names.add(d.Id));
                 return names;
             }
         } else if (args.length == 4) {

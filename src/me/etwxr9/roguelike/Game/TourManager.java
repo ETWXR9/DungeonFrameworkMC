@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -35,12 +36,12 @@ import me.etwxr9.roguelike.Event.LeaveRoomEvent;
 import me.etwxr9.roguelike.Event.RoomClearEvent;
 
 public class TourManager implements Listener {
-    public static Map<Player, DungeonTour> Tours = new HashMap<Player, DungeonTour>();
+    public static List<DungeonTour> Tours = new ArrayList<DungeonTour>();
 
     public static DungeonTour NewTour(Player p) {
         var tour = new DungeonTour();
+        Tours.add(tour);
         tour.player.add(p);
-        Tours.put(p, tour);
         // 加载LUAAPI
         tour.global.load("LuaAPI = luajava.bindClass([[me.etwxr9.roguelike.DungeonUtil.LuaAPI]])").call();
         // 加载全局lua逻辑
@@ -56,7 +57,14 @@ public class TourManager implements Listener {
     }
 
     public static DungeonTour GetTour(Player p) {
-        return Tours.get(p);
+        // var list = Tours.stream().filter(t ->
+        // t.player.contains(p)).collect(Collectors.toList());
+        for (DungeonTour t : Tours) {
+            if (t.player.contains(p)) {
+                return t;
+            }
+        }
+        return null;
 
     }
 
@@ -77,7 +85,7 @@ public class TourManager implements Listener {
         var list = new ArrayList<int[]>();
 
         // 取得已经占用的房间
-        Tours.values().forEach(t -> {
+        Tours.forEach(t -> {
             if (t.room == null) {
                 return;
             }
@@ -99,12 +107,8 @@ public class TourManager implements Listener {
 
     }
 
-    public static void EnterRoom(Player p, RoomInfo ri) {
-        var tour = GetTour(p);
-        if (tour == null) {
-            p.sendMessage("游戏不存在！");
-            return;
-        }
+    public static void EnterRoom(DungeonTour tour, RoomInfo ri) {
+        var p = tour.GetFirstPlayer();
         var dungeon = DungeonManager.GetDungeonInfo(ri.DungeonId);
         LeaveRoomEvent lre = new LeaveRoomEvent(tour, dungeon, ri, tour.roomIndex, p);
         Bukkit.getPluginManager().callEvent(lre);
@@ -127,30 +131,22 @@ public class TourManager implements Listener {
         }
         var point = DungeonManager.GetPoint(dungeon, ri.Rooms.get(index), ri.PlayerPosition);
         var world = Bukkit.getWorld(dungeon.Id);
+        tour.player.forEach(player -> {
+            player.teleport(new Location(world, point[0] + 0.5, point[1] + 0.5, point[2] + 0.5));
+        });
+        tour.dungeon = dungeon;
+        tour.room = ri;
+        tour.roomIndex = index;
 
-        // p.sendMessage(MessageFormat.format("准备传送至地牢世界：{0}， 房间Id：{1}， 序号：{2}",
-        // world.getName(), ri.Id, index));
-        // p.sendMessage(MessageFormat.format("传送点 {0}， 房间Id：{1}， 序号：{2}",
-        // world.getName(), ri.Id, index));
-        if (p.teleport(new Location(world, point[0], point[1], point[2]))) {
-            tour.dungeon = dungeon;
-            tour.room = ri;
-            tour.roomIndex = index;
-            // tour.isClear = false;
-            // p.sendMessage("传送成功");
-        } else {
-            p.sendMessage("传送失败");
-            return;
-        }
-
-        // 加载房间lua
         var luaData = LuaLoader.RoomLuas.get(ri.Id);
-        var initLua = tour.global.load(luaData).call();
-        initLua = tour.global.get(ri.Id);
-        tour.luaMap.put(ri.Id, initLua);
+        if (luaData != null) {
+            var initLua = tour.global.load(luaData).call();
+            initLua = tour.global.get(ri.Id);
+            tour.luaMap.put(ri.Id, initLua);
 
-        var func = initLua.get("init");
-        func.call(initLua, CoerceJavaToLua.coerce(tour), CoerceJavaToLua.coerce(p));
+            var func = initLua.get("init");
+            func.call(initLua, CoerceJavaToLua.coerce(tour), CoerceJavaToLua.coerce(p));
+        }
 
         EnterRoomEvent ere = new EnterRoomEvent(tour, dungeon, ri, index, p);
         Bukkit.getPluginManager().callEvent(ere);

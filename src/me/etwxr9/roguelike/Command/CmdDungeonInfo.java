@@ -26,10 +26,10 @@ public class CmdDungeonInfo implements CommandInterface {
             p.sendMessage(MessageFormat.format("查看地牢信息：{0}", di.Id));
             p.sendMessage(MessageFormat.format("原点坐标：{0}", Arrays.toString(di.Origin)));
             p.sendMessage(MessageFormat.format("地牢大小：{0}", Arrays.toString(di.Size)));
-            p.sendMessage(MessageFormat.format("单元大小：{0}", Arrays.toString(di.UnitSize)));
-            p.sendMessage(MessageFormat.format("房间数量：{0}", di.Units.size()));
+            p.sendMessage(MessageFormat.format("单元大小：{0}", Arrays.toString(di.RoomSize)));
+            p.sendMessage(MessageFormat.format("房间数量：{0}", di.Rooms.size()));
             p.sendMessage(MessageFormat.format("空位数量：{0}", di.EmptyRoomList.size()));
-            di.Units.forEach(d -> p.sendMessage(MessageFormat.format("房间名：{0}，房间数量：{1}", d.Id, d.Rooms.size())));
+            di.Rooms.forEach(d -> p.sendMessage(MessageFormat.format("房间名：{0}，房间数量：{1}", d.Id, d.Rooms.size())));
             return true;
         }
 
@@ -67,7 +67,7 @@ public class CmdDungeonInfo implements CommandInterface {
                 return null;
             }
             var names = new ArrayList<String>();
-            di.Units.forEach(r -> names.add(r.Id));
+            di.Rooms.forEach(r -> names.add(r.Id));
             return names;
         }
         return null;

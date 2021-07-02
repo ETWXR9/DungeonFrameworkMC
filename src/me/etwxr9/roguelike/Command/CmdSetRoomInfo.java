@@ -1,5 +1,8 @@
 package me.etwxr9.roguelike.Command;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.etwxr9.roguelike.Main;
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
 //设置当前房间的配置，敌人位置有set/unset/clear三种
@@ -41,9 +45,9 @@ public class CmdSetRoomInfo implements CommandInterface {
                     switch (args[2]) {
                         case "set":
                             // 判断玩家是否在房间内
-                            if ((pos[0] >= dm.currentDungeon.UnitSize[0] || pos[0] < 0)
-                                    || (pos[1] >= dm.currentDungeon.UnitSize[1] || pos[1] < 0)
-                                    || (pos[2] >= dm.currentDungeon.UnitSize[2] || pos[2] < 0)) {
+                            if ((pos[0] >= dm.currentDungeon.RoomSize[0] || pos[0] < 0)
+                                    || (pos[1] >= dm.currentDungeon.RoomSize[1] || pos[1] < 0)
+                                    || (pos[2] >= dm.currentDungeon.RoomSize[2] || pos[2] < 0)) {
                                 p.sendMessage("当前位置超出房间范围");
                                 break;
                             }
@@ -62,11 +66,30 @@ public class CmdSetRoomInfo implements CommandInterface {
                     }
                 }
                 break;
-            case "id":// 这里需要做下重复检查
+            case "id":// 这里需要做重复检查+目录更改
                 if (args.length != 3) {
                     return false;
                 }
-                dm.currentRoom.Id = args[2];
+                var newId = args[2];
+                if (dm.currentDungeon.GetRoom(newId) != null) {
+                    p.sendMessage("id已经存在！");
+                }
+                var oriFile = Paths.get(Main.getInstance().getDataFolder().getAbsolutePath() + "/Room/"
+                        + dm.currentDungeon.Id + "/" + dm.currentRoom.Id + "/" + dm.currentRoom.Id + ".json").toFile();
+                var newFile = new File(oriFile.getParent() + "/" + newId + ".json");
+                // var orilua = Paths.get(Main.getInstance().getDataFolder().getAbsolutePath() +
+                // "/Room/"
+                // + dm.currentDungeon.Id + "/" + dm.currentRoom.Id + "/" + dm.currentRoom.Id +
+                // ".lua").toFile();
+                // var newlua = new File(oriFile.getParent() + "/" + newId + ".lua");
+                oriFile.renameTo(newFile);
+                // if (Files.exists(orilua.toPath())) {
+                // orilua.renameTo(newlua);
+                // }
+                var dir = oriFile.getParentFile();
+                var newDir = new File(dir.getParent() + "/" + newId);
+                dir.renameTo(newDir);
+                dm.currentRoom.Id = newId;
                 break;
             case "tags":// 这里需要做下重复检查
                 if (args.length != 4) {
@@ -114,9 +137,9 @@ public class CmdSetRoomInfo implements CommandInterface {
                                 return false;
                             }
                             // 判断玩家是否在房间内
-                            if ((pos[0] >= dm.currentDungeon.UnitSize[0] || pos[0] < 0)
-                                    || (pos[1] >= dm.currentDungeon.UnitSize[1] || pos[1] < 0)
-                                    || (pos[2] >= dm.currentDungeon.UnitSize[2] || pos[2] < 0)) {
+                            if ((pos[0] >= dm.currentDungeon.RoomSize[0] || pos[0] < 0)
+                                    || (pos[1] >= dm.currentDungeon.RoomSize[1] || pos[1] < 0)
+                                    || (pos[2] >= dm.currentDungeon.RoomSize[2] || pos[2] < 0)) {
                                 p.sendMessage("当前位置超出房间范围");
                                 break;
                             }
@@ -154,7 +177,7 @@ public class CmdSetRoomInfo implements CommandInterface {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 2) {
-            var configs = Arrays.asList("playerPostion", "tags", "id", "specialPosition");
+            var configs = Arrays.asList("playerPosition", "tags", "id", "specialPosition");
             return configs;
         } else if (args.length == 3) {
             List<String> items;
@@ -171,10 +194,9 @@ public class CmdSetRoomInfo implements CommandInterface {
                 default:
                     break;
             }
-            if (args.length == 4 && args[1].equals("specialPosition")) {
-                items = Arrays.asList("<posId>");
-                return items;
-            }
+        } else if (args.length == 4 && args[1].equals("specialPosition")) {
+            return Arrays.asList("<posId>");
+
         }
 
         return null;

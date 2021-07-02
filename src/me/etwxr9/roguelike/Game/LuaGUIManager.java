@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 public class LuaGUIManager implements Listener {
@@ -22,13 +23,18 @@ public class LuaGUIManager implements Listener {
             // e.getWhoClicked().sendMessage("没找到btn");
             return;
         }
-
+        ItemStack item = e.getCurrentItem();
+        if (item == null) {
+            return;
+        }
+        e.setCancelled(true);
         GUIButton button = null;
         for (GUIButton btn : buttons) {
-            e.getWhoClicked().sendMessage("比较item");
-            if (e.getCurrentItem().equals(btn.itemStack)) {
+            // e.getWhoClicked().sendMessage("比较item");
+
+            if (item.equals(btn.itemStack)) {
                 button = btn;
-                e.getWhoClicked().sendMessage("相等");
+                // e.getWhoClicked().sendMessage("相等");
             }
         }
 

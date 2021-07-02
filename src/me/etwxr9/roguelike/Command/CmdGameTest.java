@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.etwxr9.roguelike.Game.DungeonTour;
 // import me.etwxr9.roguelike.Game.DungeonGUI;
 import me.etwxr9.roguelike.Game.TourManager;
 
@@ -32,11 +33,12 @@ public class CmdGameTest implements CommandInterface {
                 break;
             case "end":
                 // 是否已经存在游戏
-                if (TourManager.GetTour(p) == null) {
+                DungeonTour endTour = TourManager.GetTour(p);
+                if (endTour == null) {
                     p.sendMessage("当前不存在游戏！");
                     break;
                 }
-                TourManager.Tours.remove(p);
+                TourManager.Tours.remove(endTour);
                 p.sendMessage("当前游戏结束！");
                 break;
             case "gameInfo":
@@ -58,7 +60,6 @@ public class CmdGameTest implements CommandInterface {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        // TODO Auto-generated method stub
         if (args.length != 2) {
             return null;
         }

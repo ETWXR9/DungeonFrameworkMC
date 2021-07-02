@@ -32,7 +32,7 @@ public class CmdRoomInfo implements CommandInterface {
 
         p.sendMessage(MessageFormat.format("§b查看房间信息：所属地牢：{0}， Id：{1}, 序号：{2}", di.Id, ri.Id,
                 ri.Rooms.indexOf(dm.currentPosition)));
-        p.sendMessage(MessageFormat.format("单元大小：{0}", Arrays.toString(di.UnitSize)));
+        p.sendMessage(MessageFormat.format("单元大小：{0}", Arrays.toString(di.RoomSize)));
         p.sendMessage(MessageFormat.format("房间副本数量：{0}", ri.Rooms.size()));
         p.sendMessage("房间Tag：");
         ri.Tags.forEach(t -> {

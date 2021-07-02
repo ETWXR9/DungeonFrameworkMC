@@ -1,6 +1,7 @@
 package me.etwxr9.roguelike.Command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -94,15 +95,37 @@ public class CmdCreateDungeon implements CommandInterface {
 
         // 在0,0,0创建一个新房间，创建相应的ROOM配置文件
         // 传送玩家,设定当前房间
-        DungeonManager.NewDefaultRoom(p, DungeonManager.GetDungeonInfo(id));
+        DungeonManager.NewRoom(p, DungeonManager.GetDungeonInfo(id), "default");
 
         return true;
     }
 
+    // /rl createdungeon <id> <dungeon x> <y> <z> <room x> <y> <z> <tags...>
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         // TODO Auto-generated method stub
-        return null;
+        switch (args.length) {
+            case 0:
+                return null;
+            case 1:
+                return null;
+            case 2:
+                return Arrays.asList("<id>");
+            case 3:
+                return Arrays.asList("<dungeon x>");
+            case 4:
+                return Arrays.asList("<dungeon y>");
+            case 5:
+                return Arrays.asList("<dungeon z>");
+            case 6:
+                return Arrays.asList("<room x>");
+            case 7:
+                return Arrays.asList("<room y>");
+            case 8:
+                return Arrays.asList("<room z>");
+            default:
+                return Arrays.asList("<tags...>");
+        }
     }
 
 }

@@ -16,6 +16,7 @@ public class RoomInfo {
         PlayerPosition = new int[3];
         SpecialPositions = new HashMap<int[], String>();
         Rooms = new ArrayList<int[]>();
+
     }
 
     public String DungeonId;

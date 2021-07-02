@@ -42,7 +42,21 @@ public class LuaAPI {
         return TourManager.GetTour(p);
     }
 
-    public static Inventory CreateInv(Player p, int row) {
+    public static DungeonInfo GetDungeon(String id) {
+        return DungeonManager.GetDungeonInfo(id);
+    }
+
+    public static void EndTour(Player p) {
+        // 是否已经存在游戏
+        DungeonTour endTour = TourManager.GetTour(p);
+        if (endTour == null) {
+            // p.sendMessage("当前不存在游戏！");
+            return;
+        }
+        TourManager.Tours.remove(endTour);
+    }
+
+    public static Inventory CreateGUI(Player p, int row) {
         var inv = Bukkit.createInventory(p, row * 9);
         LuaGUIManager.invMap.put(inv, new ArrayList<GUIButton>());
         return inv;
@@ -57,12 +71,15 @@ public class LuaAPI {
         // p.sendMessage("AddButton1");
         var loreList = new ArrayList<String>();
         for (int i = 0; i < lore.length(); i++) {
-            loreList.add(lore.get(i).toString());
+            loreList.add(lore.get(i + 1).toString());
         }
         meta.setLore(loreList);
         // p.sendMessage("AddButton2");
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        meta.addEnchant(Enchantment.MENDING, 10, true);
+        if (enchant) {
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            meta.addEnchant(Enchantment.MENDING, 10, true);
+        }
+
         itemStack.setItemMeta(meta);
         inv.setItem(index, itemStack);
         var btn = new GUIButton(itemStack, self, func);
@@ -85,9 +102,9 @@ public class LuaAPI {
         if (ri == null) {
             tour.player.get(0).sendMessage("房间" + room + "不存在");
         }
-        tour.player.forEach(p -> {
-            TourManager.EnterRoom(p, ri);
-        });
+
+        TourManager.EnterRoom(tour, ri);
+
         return ri;
     }
 
@@ -98,17 +115,6 @@ public class LuaAPI {
             a.hashset(CoerceJavaToLua.coerce(k), CoerceJavaToLua.coerce(v));
         });
         return a;
-
-        // var size = tour.room.SpecialPositions.size();
-        // var pos = new ArrayList<LuaValue>();
-        // tour.room.SpecialPositions.keySet().forEach(k -> {
-        // pos.add(CoerceJavaToLua.coerce(k));
-        // });
-        // var id = new ArrayList<LuaValue>();
-        // tour.room.SpecialPositions.values().forEach(v -> {
-        // id.add(CoerceJavaToLua.coerce(v));
-        // });
-        // var ppos = LuaTable.listOf(((LuaValue[]) pos.toArray()));
 
     }
 
@@ -169,7 +175,7 @@ public class LuaAPI {
         if (tour == null) {
             return;
         }
-        TourManager.Tours.remove(tour.GetFirstPlayer());
+        TourManager.Tours.remove(tour);
     }
 
 }

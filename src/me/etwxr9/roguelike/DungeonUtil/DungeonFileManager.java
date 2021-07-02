@@ -110,7 +110,7 @@ public class DungeonFileManager {
     // 将DungeonInfo转换为字符串
     public static String Parsejson(DungeonInfo obj) {
         // 简化
-        var a = new DungeonInfo(obj.Id, obj.Tags, obj.Origin, obj.Size, obj.UnitSize);
+        var a = new DungeonInfo(obj.Id, obj.Tags, obj.Origin, obj.Size, obj.RoomSize);
         var data = JSON.toJSONString(a);
         return data;
     }
