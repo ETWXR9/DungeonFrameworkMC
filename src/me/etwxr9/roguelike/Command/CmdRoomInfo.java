@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,7 +48,6 @@ public class CmdRoomInfo implements CommandInterface {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        // TODO Auto-generated method stub
         if (args.length != 2)
             return null;
         var names = new ArrayList<String>();

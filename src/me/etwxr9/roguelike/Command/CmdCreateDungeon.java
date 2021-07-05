@@ -3,7 +3,6 @@ package me.etwxr9.roguelike.Command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
@@ -13,10 +12,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 import me.etwxr9.roguelike.Main;
 import me.etwxr9.roguelike.VoidChunkGenerator;
 import me.etwxr9.roguelike.DungeonUtil.DungeonFileManager;
+import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
 public class CmdCreateDungeon implements CommandInterface {
 
@@ -48,7 +47,6 @@ public class CmdCreateDungeon implements CommandInterface {
         } catch (Exception e) {
             p.sendMessage("参数格式错误");
             return false;
-            // TODO: handle exception
         }
         // 检查size超限
         if (dungeonSize[1] * roomSize[1] > 250) {
@@ -103,7 +101,6 @@ public class CmdCreateDungeon implements CommandInterface {
     // /rl createdungeon <id> <dungeon x> <y> <z> <room x> <y> <z> <tags...>
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        // TODO Auto-generated method stub
         switch (args.length) {
             case 0:
                 return null;

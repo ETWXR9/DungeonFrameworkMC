@@ -7,7 +7,6 @@ import org.bukkit.event.HandlerList;
 import me.etwxr9.roguelike.DungeonUtil.DungeonInfo;
 import me.etwxr9.roguelike.DungeonUtil.RoomInfo;
 import me.etwxr9.roguelike.Game.DungeonTour;
-import me.etwxr9.roguelike.Game.TourManager;
 
 public class LeaveRoomEvent extends Event {
 

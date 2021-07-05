@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -23,12 +21,14 @@ public class DungeonTour {
     public DungeonTour() {
         this.player = new ArrayList<Player>();
         this.luaMap = new HashMap<String, LuaValue>();
+        this.dynamicLuaMap = new HashMap<String, LuaValue>();
         this.global = JsePlatform.standardGlobals();
     }
 
     public RoomInfo room;
     public int roomIndex;
     public Map<String, LuaValue> luaMap;
+    public Map<String, LuaValue> dynamicLuaMap;
     public Globals global;
 
     public int[] GetRoomPosition() {

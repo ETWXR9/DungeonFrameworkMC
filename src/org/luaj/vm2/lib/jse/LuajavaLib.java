@@ -92,6 +92,7 @@ import org.luaj.vm2.lib.VarArgFunction;
  * @see <a href=
  *      "http://www.keplerproject.org/luajava/manual.html#luareference">http://www.keplerproject.org/luajava/manual.html#luareference</a>
  */
+
 public class LuajavaLib extends VarArgFunction {
 
     static final int INIT = 0;
@@ -121,15 +122,15 @@ public class LuajavaLib extends VarArgFunction {
                     return t;
                 }
                 case BINDCLASS: {
-                    final Class clazz = classForName(args.checkjstring(1));
+                    final Class<?> clazz = classForName(args.checkjstring(1));
                     return JavaClass.forClass(clazz);
                 }
                 case NEWINSTANCE:
                 case NEW: {
                     // get constructor
                     final LuaValue c = args.checkvalue(1);
-                    final Class clazz = (opcode == NEWINSTANCE ? classForName(c.tojstring())
-                            : (Class) c.checkuserdata(Class.class));
+                    final Class<?> clazz = (opcode == NEWINSTANCE ? classForName(c.tojstring())
+                            : (Class<?>) c.checkuserdata(Class.class));
                     final Varargs consargs = args.subargs(2);
                     return JavaClass.forClass(clazz).getConstructor().invoke(consargs);
                 }
@@ -141,7 +142,7 @@ public class LuajavaLib extends VarArgFunction {
                     final LuaValue lobj = args.checktable(niface + 1);
 
                     // get the interfaces
-                    final Class[] ifaces = new Class[niface];
+                    final Class<?>[] ifaces = new Class[niface];
                     for (int i = 0; i < niface; i++)
                         ifaces[i] = classForName(args.checkjstring(i + 1));
 
@@ -158,7 +159,7 @@ public class LuajavaLib extends VarArgFunction {
                     // get constructor
                     String classname = args.checkjstring(1);
                     String methodname = args.checkjstring(2);
-                    Class clazz = classForName(classname);
+                    Class<?> clazz = classForName(classname);
                     Method method = clazz.getMethod(methodname, new Class[] {});
                     Object result = method.invoke(clazz, new Object[] {});
                     if (result instanceof LuaValue) {
@@ -180,7 +181,7 @@ public class LuajavaLib extends VarArgFunction {
     }
 
     // load classes using app loader to allow luaj to be used as an extension
-    protected Class classForName(String name) throws ClassNotFoundException {
+    protected Class<?> classForName(String name) throws ClassNotFoundException {
         return Class.forName(name);
     }
 

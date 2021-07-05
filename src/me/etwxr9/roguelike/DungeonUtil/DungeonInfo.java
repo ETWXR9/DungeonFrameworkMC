@@ -3,8 +3,6 @@ package me.etwxr9.roguelike.DungeonUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.etwxr9.roguelike.Main;
-
 public class DungeonInfo {
     public DungeonInfo(String id, List<String> tags, int[] origin, int[] size, int[] unitSize) {
         Id = id;

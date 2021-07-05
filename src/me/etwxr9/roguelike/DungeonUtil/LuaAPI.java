@@ -1,8 +1,6 @@
 package me.etwxr9.roguelike.DungeonUtil;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,7 +9,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -24,16 +21,16 @@ import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.parser.LuaParser;
 
 import me.etwxr9.roguelike.Main;
 import me.etwxr9.roguelike.Game.DungeonTour;
 import me.etwxr9.roguelike.Game.GUIButton;
 import me.etwxr9.roguelike.Game.LuaGUIManager;
+import me.etwxr9.roguelike.Game.LuaListenerManager;
 import me.etwxr9.roguelike.Game.TourManager;
 
 public class LuaAPI {
-    public static void SendMessage(Player p, String text) {
+    public static void PlayerSendMessage(Player p, String text) {
         p.sendMessage(text);
 
     }
@@ -46,24 +43,14 @@ public class LuaAPI {
         return DungeonManager.GetDungeonInfo(id);
     }
 
-    public static void EndTour(Player p) {
-        // 是否已经存在游戏
-        DungeonTour endTour = TourManager.GetTour(p);
-        if (endTour == null) {
-            // p.sendMessage("当前不存在游戏！");
-            return;
-        }
-        TourManager.Tours.remove(endTour);
-    }
-
-    public static Inventory CreateGUI(Player p, int row) {
+    public static Inventory GUICreate(Player p, int row) {
         var inv = Bukkit.createInventory(p, row * 9);
         LuaGUIManager.invMap.put(inv, new ArrayList<GUIButton>());
         return inv;
     }
 
-    public static GUIButton AddButton(Player p, String name, LuaValue lore, String mat, boolean enchant, Inventory inv,
-            int index, LuaFunction func, LuaValue self) {
+    public static GUIButton GUIAddButton(Player p, String name, LuaValue lore, String mat, boolean enchant,
+            Inventory inv, int index, LuaFunction func, LuaValue self) {
         var itemStack = new ItemStack(Material.getMaterial(mat.toUpperCase()), 1);
         var meta = itemStack.getItemMeta();
 
@@ -89,11 +76,11 @@ public class LuaAPI {
         return btn;
     }
 
-    public static InventoryView OpenGUI(Inventory inv) {
+    public static InventoryView GUIOpen(Inventory inv) {
         return ((Player) inv.getHolder()).openInventory(inv);
     }
 
-    public static RoomInfo EnterRoom(DungeonTour tour, String dungeon, String room) {
+    public static RoomInfo TourEnterRoom(DungeonTour tour, String dungeon, String room) {
         var di = DungeonManager.GetDungeonInfo(dungeon);
         if (di == null) {
             tour.player.get(0).sendMessage("地牢" + dungeon + "不存在");
@@ -108,7 +95,7 @@ public class LuaAPI {
         return ri;
     }
 
-    public static LuaTable GetSpecialPos(DungeonTour tour) {
+    public static LuaTable TourGetSpecialPos(DungeonTour tour) {
         var sp = tour.room.SpecialPositions;
         var a = new LuaTable();
         sp.forEach((k, v) -> {
@@ -118,7 +105,7 @@ public class LuaAPI {
 
     }
 
-    public static Entity SpawnEntity(DungeonTour tour, int[] pos, String id) {
+    public static Entity EntitySpawn(DungeonTour tour, int[] pos, String id) {
         var spawnPos = DungeonManager.GetPoint(tour.dungeon, tour.GetRoomPosition(), pos);
         var world = Main.getInstance().getServer().getWorld(tour.dungeon.Id);
         double x, y, z;
@@ -130,16 +117,16 @@ public class LuaAPI {
         return entity;
     }
 
-    public static ItemStack NewItemStack(String mat, int amount) {
+    public static ItemStack ItemNew(String mat, int amount) {
         ItemStack is = new ItemStack(Material.valueOf(mat.toUpperCase()), amount);
         return is;
     }
 
-    public static void GivePlayerItem(Player p, ItemStack item) {
+    public static void PlayerGiveItem(Player p, ItemStack item) {
         p.getInventory().addItem(item);
     }
 
-    public static void SetItemStringTag(ItemStack item, String key, String content) {
+    public static void ItemSetStringTag(ItemStack item, String key, String content) {
         NamespacedKey nKey = new NamespacedKey(Main.getInstance(), key);
         ItemMeta itemMeta = item.getItemMeta();
         PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
@@ -154,7 +141,7 @@ public class LuaAPI {
         item.setItemMeta(itemMeta);
     }
 
-    public static String GetItemStringTag(ItemStack item, String key) {
+    public static String ItemGetStringTag(ItemStack item, String key) {
         NamespacedKey nKey = new NamespacedKey(Main.getInstance(), key);
         ItemMeta itemMeta = item.getItemMeta();
         PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
@@ -165,17 +152,52 @@ public class LuaAPI {
         }
     }
 
-    public static ItemStack AddItemEnchantment(ItemStack item, String enchant, int level) {
+    public static ItemStack ItemAddEnchantment(ItemStack item, String enchant, int level) {
         item.addUnsafeEnchantment(Enchantment.getByKey(NamespacedKey.minecraft(enchant.toLowerCase())), level);
         return item;
     }
 
-    public static void EndTour(DungeonTour tour) {
-        // 是否已经存在游戏
-        if (tour == null) {
-            return;
+    public static ItemStack ItemChangeName(ItemStack item, String name) {
+        var meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static void TourEnd(DungeonTour tour) {
+        TourManager.EndTour(tour);
+    }
+
+    public static void EventRegister(String name, DungeonTour tour, LuaFunction f) {
+        try {
+            LuaListenerManager.RegisterEvent(name, tour, f);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        TourManager.Tours.remove(tour);
+    }
+
+    public static void EventRegister(String name, DungeonTour tour, String dynamicLua, LuaFunction f) {
+        try {
+            LuaListenerManager.RegisterEvent(name, tour, dynamicLua, f);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void EventUnRegister(String name, DungeonTour tour, LuaFunction f) {
+        try {
+            LuaListenerManager.RegisterEvent(name, tour, f);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void EventUnRegister(String name, DungeonTour tour, String dynamicLua, LuaFunction f) {
+        try {
+            LuaListenerManager.UnRegisterEvent(name, tour, dynamicLua, f);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }

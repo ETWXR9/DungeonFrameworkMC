@@ -13,7 +13,6 @@ public class CmdNewRoom implements CommandInterface {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        // TODO Auto-generated method stub
         if (args.length != 2) {
             return false;
         }

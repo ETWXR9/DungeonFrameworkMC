@@ -3,7 +3,6 @@ package me.etwxr9.roguelike.Game;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -131,7 +131,7 @@ public class DungeonFileManager {
         var data = Files.readString(path);
         var luaPath = Main.getInstance().getDataFolder().getAbsolutePath() + "/Room/" + dungeonId + "/" + id + "/" + id
                 + ".lua";
-        LuaLoader.LoadRoomLua(Main.getInstance().global, luaPath, id);
+        LuaLoader.LoadRoomLua(Main.getInstance().global, luaPath, dungeonId, id);
         return data;
     }
 

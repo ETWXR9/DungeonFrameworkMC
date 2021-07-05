@@ -29,7 +29,6 @@ public class CmdUpdateRoom implements CommandInterface {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        // TODO Auto-generated method stub
         return null;
     }
 

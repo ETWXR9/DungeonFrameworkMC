@@ -77,7 +77,8 @@ public class DungeonManager {
                 Main.getInstance().getLogger().info("读取地牢数据 " + n);
                 LoadDungeon(n);
             } catch (Exception e) {
-                Main.getInstance().getLogger().info("读取地牢数据出错！ " + e.getMessage());
+                Main.getInstance().getLogger().info("读取地牢数据出错！ ");
+                e.printStackTrace();
             }
         });
     }
@@ -87,6 +88,7 @@ public class DungeonManager {
         DungeonInfo di;
         try {
             di = DungeonFileManager.ParseDungeonInfo(DungeonFileManager.ReadDungeonFile(id));
+            diList.add(di);
             var rooms = DungeonFileManager.AllRoomFileName(id);
             di.initEmptyRoomList();
             // Main.getInstance().getLogger().info("读取所有房间，数量为" + rooms.size());
@@ -107,7 +109,7 @@ public class DungeonManager {
                 }
 
             });
-            diList.add(di);
+
         } catch (IOException e) {
             Main.getInstance().getLogger().info("读取地牢数据出错！ " + e.getMessage());
             return;
@@ -261,7 +263,6 @@ public class DungeonManager {
                 forwardExtentCopy.setCopyingEntities(false);
                 Operations.complete(forwardExtentCopy);
             } catch (WorldEditException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -281,7 +282,6 @@ public class DungeonManager {
                     try {
                         Operations.complete(operation);
                     } catch (WorldEditException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     p.sendMessage("更新完毕");
@@ -302,7 +302,6 @@ public class DungeonManager {
                     try {
                         Operations.complete(operation);
                     } catch (WorldEditException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     p.sendMessage("复制完毕");

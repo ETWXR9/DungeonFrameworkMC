@@ -17,7 +17,6 @@ public class CmdDeleteRoom implements CommandInterface {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        // TODO Auto-generated method stub
         Player p = (Player) sender;
         if (args.length != 2)
             return false;
@@ -78,7 +77,6 @@ public class CmdDeleteRoom implements CommandInterface {
 
             @Override
             public int compare(int[] o1, int[] o2) {
-                // TODO Auto-generated method stub
                 for (int i = 2; i > -1; i--) {
                     if (o1[i] != o2[i]) {
                         return Integer.compare(o1[i], o2[i]);

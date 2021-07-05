@@ -14,7 +14,6 @@ public class CmdCopyRoom implements CommandInterface {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        // TODO Auto-generated method stub
         if (args.length != 2) {
             return false;
         }
@@ -23,7 +22,6 @@ public class CmdCopyRoom implements CommandInterface {
         try {
             count = Integer.parseInt(args[1]);
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
             return false;
         }

@@ -16,7 +16,6 @@ public class CmdGameTest implements CommandInterface {
     // 三种参数，start启动地牢，clear清理房间，open开启UI
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        // TODO Auto-generated method stub
         if (args.length != 2) {
             return false;
         }
@@ -38,7 +37,7 @@ public class CmdGameTest implements CommandInterface {
                     p.sendMessage("当前不存在游戏！");
                     break;
                 }
-                TourManager.Tours.remove(endTour);
+                TourManager.EndTour(endTour);
                 p.sendMessage("当前游戏结束！");
                 break;
             case "gameInfo":

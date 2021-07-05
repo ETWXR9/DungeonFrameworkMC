@@ -3,28 +3,22 @@ package me.etwxr9.roguelike.DungeonUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.jse.JsePlatform;
 
 import me.etwxr9.roguelike.Main;
-import me.etwxr9.roguelike.Game.ItemData;
-import me.etwxr9.roguelike.Game.LuaListenerManager;
 
 public class LuaLoader {
-
+    // <name,lua>>
     public static Map<String, String> GameLuas = new HashMap<String, String>();
-    public static Map<String, String> ItemLuas = new HashMap<String, String>();
-    public static Map<String, String> RoomLuas = new HashMap<String, String>();
+    public static Map<String, String> DynamicLuas = new HashMap<String, String>();
+    // <dungeon<room,lua>>
+    public static Map<String, Map<String, String>> RoomLuas = new HashMap<String, Map<String, String>>();
 
     public static void LoadItem(Globals globals) {
         // 加载道具
@@ -59,21 +53,21 @@ public class LuaLoader {
                         continue;
                     }
 
-                    ItemLuas.put(itemName, itemLua);
-                    // 读道具事件订阅
-                    var itemTable = globals.get(itemName);
-                    LuaValue key = LuaValue.NIL;
-                    while (true) {
-                        Varargs n = itemTable.next(key);
-                        if ((key = n.arg1()).isnil())
-                            break;
-                        LuaValue v = n.arg(2);
-                        if (v.typename().equals("function")) {
-                            List<String> itemList = LuaListenerManager.luaFuncMap.get(key.toString());
-                            if (itemList != null)
-                                itemList.add(itemName);
-                        }
-                    }
+                    DynamicLuas.put(itemName, itemLua);
+                    // // 读道具事件订阅
+                    // var itemTable = globals.get(itemName);
+                    // LuaValue key = LuaValue.NIL;
+                    // while (true) {
+                    // Varargs n = itemTable.next(key);
+                    // if ((key = n.arg1()).isnil())
+                    // break;
+                    // LuaValue v = n.arg(2);
+                    // if (v.typename().equals("function")) {
+                    // List<String> itemList = LuaListenerManager.luaFuncMap.get(key.toString());
+                    // if (itemList != null)
+                    // itemList.add(itemName);
+                    // }
+                    // }
                 }
             }
 
@@ -104,21 +98,21 @@ public class LuaLoader {
                     Varargs n = itemTable.next(key);
                     if ((key = n.arg1()).isnil())
                         break;
-                    LuaValue v = n.arg(2);
-                    if (v.typename().equals("function")) {
-                        List<String> gameList = LuaListenerManager.luaFuncMap.get(key.toString());
-                        if (gameList != null)
-                            gameList.add(gameLuaName);
-                    }
+                    // LuaValue v = n.arg(2);
+                    // if (v.typename().equals("function")) {
+                    // List<String> gameList = LuaListenerManager.luaFuncMap.get(key.toString());
+                    // if (gameList != null)
+                    // gameList.add(gameLuaName);
+                    // }
                 }
             }
         }
 
     }
 
-    public static void LoadRoomLua(Globals globals, String path, String name) {
+    public static void LoadRoomLua(Globals globals, String path, String dungeonName, String roomName) {
         var file = new File(path);
-        if (file.isFile() && file.getName().equals(name + ".lua")) {
+        if (file.isFile() && file.getName().equals(roomName + ".lua")) {
             // 读lua
             String roomLua = "";
             try {
@@ -128,22 +122,26 @@ public class LuaLoader {
                 Main.getInstance().getLogger().info("读取lua文件出错！" + e.getMessage());
                 return;
             }
-
-            RoomLuas.put(name, roomLua);
-            // 读道具事件订阅
-            var luaTable = globals.get(name);
-            LuaValue key = LuaValue.NIL;
-            while (true) {
-                Varargs n = luaTable.next(key);
-                if ((key = n.arg1()).isnil())
-                    break;
-                LuaValue v = n.arg(2);
-                if (v.typename().equals("function")) {
-                    List<String> luaList = LuaListenerManager.luaFuncMap.get(key.toString());
-                    if (luaList != null)
-                        luaList.add(name);
-                }
+            DungeonInfo di = DungeonManager.GetDungeonInfo(dungeonName);
+            if (RoomLuas.get(di.Id) == null) {
+                RoomLuas.put(di.Id, new HashMap<String, String>());
             }
+            RoomLuas.get(di.Id).put(roomName, roomLua);
+            // RoomLuas.put(name, roomLua);
+            // // 读道具事件订阅
+            // var luaTable = globals.get(name);
+            // LuaValue key = LuaValue.NIL;
+            // while (true) {
+            // Varargs n = luaTable.next(key);
+            // if ((key = n.arg1()).isnil())
+            // break;
+            // LuaValue v = n.arg(2);
+            // if (v.typename().equals("function")) {
+            // List<String> luaList = LuaListenerManager.luaFuncMap.get(key.toString());
+            // if (luaList != null)
+            // luaList.add(name);
+            // }
+            // }
         }
 
     }

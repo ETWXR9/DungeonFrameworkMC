@@ -56,7 +56,6 @@ public class CmdDungeonInfo implements CommandInterface {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        // TODO Auto-generated method stub
         if (args.length == 2) {
             var names = new ArrayList<String>();
             DungeonManager.GetDIList().forEach(d -> names.add(d.Id));

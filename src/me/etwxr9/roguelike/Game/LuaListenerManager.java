@@ -1,107 +1,122 @@
 package me.etwxr9.roguelike.Game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static java.util.Map.entry;
 
-import java.io.Console;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.LuaFunction;
 
 import me.etwxr9.roguelike.Main;
-import me.etwxr9.roguelike.Event.EnterRoomEvent;
-import me.etwxr9.roguelike.Event.LeaveRoomEvent;
+import me.etwxr9.roguelike.DungeonUtil.EventNames;
 
 public class LuaListenerManager implements Listener {
     // Hashmap<事件名,<道具Id>>
-    public static Map<String, List<String>> luaFuncMap = new HashMap<String, List<String>>();
-    static {
-        var funcs = LuaListenerManager.class.getMethods();
-        for (Method f : funcs) {
-            var name = f.getName();
-            if (!name.startsWith("on")) {
-                continue;
-            }
-            Main.getInstance().getServer().getLogger().info("lua事件读取 " + name);
-            luaFuncMap.put(name, new ArrayList<String>());
+    // public static Map<String, List<String>> luaFuncMap = new HashMap<String,
+    // List<String>>();
+    // static {
+    // var funcs = LuaListenerManager.class.getMethods();
+    // for (Method f : funcs) {
+    // var name = f.getName();
+    // if (!name.startsWith("on")) {
+    // continue;
+    // }
+    // Main.getInstance().getServer().getLogger().info("lua事件读取 " + name);
+    // luaFuncMap.put(name, new ArrayList<String>());
+    // }
+    // }
+
+    //
+    public static Map<Class<?>, Map<DungeonTour, List<LuaFunction>>> luaEventHandlers = new HashMap<Class<?>, Map<DungeonTour, List<LuaFunction>>>();
+
+    public static Map<Class<?>, Map<DungeonTour, Map<String, List<LuaFunction>>>> luaEventDynamicHandlers = new HashMap<Class<?>, Map<DungeonTour, Map<String, List<LuaFunction>>>>();
+
+    public static void RegisterEvent(String ename, DungeonTour tour, LuaFunction handler)
+            throws ClassNotFoundException {
+        var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
+        if (!luaEventHandlers.containsKey(ec)) {
+            luaEventHandlers.put(ec, new HashMap<DungeonTour, List<LuaFunction>>());
         }
+        if (!luaEventHandlers.get(ec).containsKey(tour)) {
+            luaEventHandlers.get(ec).put(tour, new ArrayList<LuaFunction>());
+        }
+        if (!luaEventHandlers.get(ec).get(tour).contains(handler)) {
+            luaEventHandlers.get(ec).get(tour).add(handler);
+        }
+
     }
 
-    @EventHandler
-    public void onEntityDamagedByEntity(EntityDamageByEntityEvent e) {
-        // Main.getInstance().getServer().broadcastMessage("发生EntityDamageByEntity事件，实体为
-        // " + e.getDamager().getType());
-        if (e.getDamager().getType() == EntityType.PLAYER) {
-            var p = (Player) e.getDamager();
-            var tour = TourManager.GetTour(p);
-            if (tour == null) {
-                return;
-            }
-            CallLuaFunc("onEntityDamagedByEntity", tour, e);
-
+    public static void RegisterEvent(String ename, DungeonTour tour, String dynamicLua, LuaFunction handler)
+            throws ClassNotFoundException {
+        var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
+        if (!luaEventDynamicHandlers.containsKey(ec)) {
+            luaEventDynamicHandlers.put(ec, new HashMap<DungeonTour, Map<String, List<LuaFunction>>>());
+        }
+        if (!luaEventDynamicHandlers.get(ec).containsKey(tour)) {
+            luaEventDynamicHandlers.get(ec).put(tour, new HashMap<String, List<LuaFunction>>());
+        }
+        if (!luaEventDynamicHandlers.get(ec).get(tour).containsKey(dynamicLua)) {
+            luaEventDynamicHandlers.get(ec).get(tour).put(dynamicLua, new ArrayList<LuaFunction>());
+        }
+        if (!luaEventDynamicHandlers.get(ec).get(tour).get(dynamicLua).contains(handler)) {
+            luaEventDynamicHandlers.get(ec).get(tour).get(dynamicLua).add(handler);
         }
 
     }
 
-    @EventHandler
-    public void onLeaveRoom(LeaveRoomEvent e) {
-        var tour = e.getDungeonTour();
-        if (tour == null) {
+    public static void UnRegisterEvent(String ename, DungeonTour tour, LuaFunction handler)
+            throws ClassNotFoundException {
+        var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
+        if (!luaEventHandlers.containsKey(ec)) {
             return;
         }
-        CallLuaFunc("onLeaveRoom", tour, e);
-    }
-
-    @EventHandler
-    public void onEnterRoom(EnterRoomEvent e) {
-        var tour = e.getDungeonTour();
-        if (tour == null) {
+        if (!luaEventHandlers.get(ec).containsKey(tour)) {
             return;
         }
-        CallLuaFunc("onEnterRoom", tour, e);
-
-    }
-
-    @EventHandler
-    public void onEntityDeath(EntityDeathEvent e) {
-        for (DungeonTour tour : TourManager.Tours) {
-            CallLuaFunc("onEntityDeath", tour, e);
+        if (!luaEventHandlers.get(ec).get(tour).contains(handler)) {
+            return;
         }
-
+        luaEventHandlers.get(ec).get(tour).remove(handler);
     }
 
-    // 该事件用于道具触发逻辑：包含：左右键 主手物品 副手物品
-    @EventHandler
-    public void onPlayerLeftClickAir(PlayerInteractEvent e) {
-        if (e.getAction() == Action.LEFT_CLICK_AIR) {
-            var tour = TourManager.GetTour(e.getPlayer());
-            if (tour == null) {
+    public static void UnRegisterEvent(String ename, DungeonTour tour, String dynamicLua, LuaFunction handler)
+            throws ClassNotFoundException {
+        var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
+        if (!luaEventDynamicHandlers.containsKey(ec)) {
+            return;
+        }
+        if (!luaEventDynamicHandlers.get(ec).containsKey(tour)) {
+            return;
+        }
+        if (!luaEventDynamicHandlers.get(ec).get(tour).containsKey(dynamicLua)) {
+            return;
+        }
+        if (!luaEventDynamicHandlers.get(ec).get(tour).get(dynamicLua).contains(handler)) {
+            return;
+        }
+        luaEventDynamicHandlers.get(ec).get(tour).get(dynamicLua).remove(handler);
+    }
+
+    public static void UnRegisterEvent(DungeonTour tour) {
+        luaEventHandlers.forEach((ec, v) -> {
+            if (!v.containsKey(tour)) {
                 return;
             }
-            CallLuaFunc("onPlayerLeftClickAir", tour, e);
-        }
-    }
-
-    private void CallLuaFunc(String name, DungeonTour tour, Event e) {
-        luaFuncMap.get(name).forEach((luaName) -> {
-            LuaValue itemLua = tour.luaMap.get(luaName);
-            if (itemLua == null) {
-                return;
-            }
-            itemLua.get(name).call(itemLua, CoerceJavaToLua.coerce(e));
+            v.get(tour).clear();
         });
     }
+
+    public static void UnRegisterEvent(DungeonTour tour, String dynamicLua) {
+        luaEventDynamicHandlers.forEach((ec, v) -> {
+            if (!v.containsKey(tour)) {
+                return;
+            }
+            if (!v.get(tour).containsKey(dynamicLua)) {
+                return;
+            }
+            v.get(tour).get(dynamicLua).clear();
+        });
+    }
+
 }

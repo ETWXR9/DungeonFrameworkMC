@@ -1,32 +1,18 @@
 package me.etwxr9.roguelike;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 
-import javax.swing.text.html.parser.Entity;
-
-import com.alibaba.fastjson.JSON;
-
-import org.bukkit.entity.EntityType;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
-import me.etwxr9.roguelike.DungeonUtil.LuaAPI;
-import me.etwxr9.roguelike.DungeonUtil.LuaLoader;
-import me.etwxr9.roguelike.Game.LuaGUIManager;
-import me.etwxr9.roguelike.Game.LuaListenerManager;
-import me.etwxr9.roguelike.Game.TourManager;
 // import me.etwxr9.roguelike.DungeonUtil.LuaLoader;
 // import me.etwxr9.roguelike.Game.DungeonGUI;
 // import me.etwxr9.roguelike.Game.EnemyData;
@@ -51,6 +37,12 @@ import me.etwxr9.roguelike.Command.CmdSetDefaultWorld;
 import me.etwxr9.roguelike.Command.CmdSetRoomInfo;
 import me.etwxr9.roguelike.Command.CmdUpdateRoom;
 import me.etwxr9.roguelike.Command.CommandHandler;
+import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
+import me.etwxr9.roguelike.DungeonUtil.EventNames;
+import me.etwxr9.roguelike.DungeonUtil.LuaLoader;
+import me.etwxr9.roguelike.Game.LuaGUIManager;
+import me.etwxr9.roguelike.Game.LuaListenerManager;
+import me.etwxr9.roguelike.Game.TourManager;
 
 public class Main extends JavaPlugin {
 
@@ -102,7 +94,20 @@ public class Main extends JavaPlugin {
         this.getCommand("rl").setTabCompleter(new BaseTabCompleter());
 
         // 注册事件
-        // getServer().getPluginManager().registerEvents(new DungeonGUI(), this);
+        for (Class<? extends Event> clazz : EventNames.Events) {
+            EventNames.EventClassNames.put(clazz.getSimpleName(), clazz.getCanonicalName());
+            getLogger().info("注册事件 " + clazz);
+            try {
+                getServer().getPluginManager().registerEvent(clazz, new Listener() {
+                }, EventPriority.NORMAL, new luaEventExcutor(), this, false);
+            } catch (Exception e) {
+                getLogger().info("事件 " + clazz + " 注册出错! " + e.getMessage());
+                continue;
+            }
+        }
+        // EventNames.Events.stream().forEach(clazz -> {
+
+        // });
         getServer().getPluginManager().registerEvents(new TourManager(), this);
         getServer().getPluginManager().registerEvents(new LuaListenerManager(), this);
         getServer().getPluginManager().registerEvents(new LuaGUIManager(), this);
@@ -121,4 +126,34 @@ public class Main extends JavaPlugin {
     public void onDisable() {
     }
 
+    private final class luaEventExcutor implements EventExecutor {
+
+        @Override
+        public void execute(Listener listener, Event event) throws EventException {
+            if (event == null) {
+                return;
+            }
+            var handlers = LuaListenerManager.luaEventHandlers.get(event.getClass());
+            if (handlers != null) {
+                handlers.forEach((tour, funcs) -> {
+                    funcs.forEach(f -> {
+                        f.call(CoerceJavaToLua.coerce(event));
+                    });
+                });
+            }
+            var dynamicHandlers = LuaListenerManager.luaEventDynamicHandlers.get(event.getClass());
+            if (dynamicHandlers != null) {
+                dynamicHandlers.forEach((tour, luas) -> {
+                    luas.forEach((lua, funcs) -> {
+                        funcs.forEach(f -> {
+                            f.call(CoerceJavaToLua.coerce(event));
+                        });
+                    });
+
+                });
+            }
+
+        }
+
+    }
 }
