@@ -357,6 +357,14 @@ public class DungeonManager {
         return new int[] { x, y, z };
     }
 
+    public static double[] GetPoint(DungeonInfo di, int[] roomPos, double[] roomPoint) {
+        var x = di.Origin[0] + di.RoomSize[0] * roomPos[0] + roomPoint[0];
+        var y = di.Origin[1] + di.RoomSize[1] * roomPos[1] + roomPoint[1];
+        var z = di.Origin[2] + di.RoomSize[2] * roomPos[2] + roomPoint[2];
+
+        return new double[] { x, y, z };
+    }
+
     // 返回dmList的副本
     public static List<DungeonManager> GetDMList() {
         return new ArrayList<DungeonManager>(dmList);

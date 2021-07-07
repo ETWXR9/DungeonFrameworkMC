@@ -3,6 +3,9 @@ package me.etwxr9.roguelike;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import com.github.fierioziy.particlenativeapi.api.ParticleNativeAPI;
+import com.github.fierioziy.particlenativeapi.core.ParticleNativeCore;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
@@ -55,13 +58,19 @@ public class Main extends JavaPlugin {
 
     public CommandHandler cmdHandler;
     public Globals global;
+    public ParticleNativeAPI api;
 
     @Override
     public void onEnable() {
         i = this;
-        getLogger().info(System.getProperty("java.class.path"));
+        // getLogger().info(System.getProperty("java.class.path"));
         // 管理配置文件
         saveDefaultConfig();
+        // 加载粒子系统
+
+        // ... or generate it using core module ("this" is Your plugin instance)
+        api = ParticleNativeCore.loadAPI(this);
+
         // lua
         global = JsePlatform.standardGlobals();
         // 加载lua
@@ -88,10 +97,8 @@ public class Main extends JavaPlugin {
         cmdHandler.register("copyRoom", new CmdCopyRoom());
         cmdHandler.register("updateRoom", new CmdUpdateRoom());
         cmdHandler.register("gameTest", new CmdGameTest());
-        // cmdHandler.register("gameTest", new CmdGameTest());
-        // cmdHandler.register("luaTest", new CmdLuaTest());
-        this.getCommand("rl").setExecutor(cmdHandler);
-        this.getCommand("rl").setTabCompleter(new BaseTabCompleter());
+        this.getCommand("dfmc").setExecutor(cmdHandler);
+        this.getCommand("dfmc").setTabCompleter(new BaseTabCompleter());
 
         // 注册事件
         for (Class<? extends Event> clazz : EventNames.Events) {

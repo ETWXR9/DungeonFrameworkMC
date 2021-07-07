@@ -1,11 +1,15 @@
 package me.etwxr9.roguelike.DungeonUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -17,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -27,12 +32,24 @@ import me.etwxr9.roguelike.Game.DungeonTour;
 import me.etwxr9.roguelike.Game.GUIButton;
 import me.etwxr9.roguelike.Game.LuaGUIManager;
 import me.etwxr9.roguelike.Game.LuaListenerManager;
+import me.etwxr9.roguelike.Game.LuaRunnable;
+import me.etwxr9.roguelike.Game.ScoreHelper;
 import me.etwxr9.roguelike.Game.TourManager;
 
 public class LuaAPI {
+    // 加载动态lua，返回加载后的luaTable
+    public static LuaValue LuaEnable(DungeonTour tour, String lua) {
+        TourManager.EnableDynamicLua(tour, lua);
+        return (LuaTable) tour.luaMap.get(lua);
+    }
+
+    // 卸载动态lua
+    public static void LuaDisable(DungeonTour tour, String lua) {
+        TourManager.DisableDynamicLua(tour, lua);
+    }
+
     public static void PlayerSendMessage(Player p, String text) {
         p.sendMessage(text);
-
     }
 
     public static DungeonTour GetTour(Player p) {
@@ -49,8 +66,9 @@ public class LuaAPI {
         return inv;
     }
 
+    // 向指定inv添加按钮，参数为：玩家，物品名称，lore（一个lua字符串数组），物品材质（不分大小写），是否有附魔特效，GUI容器，slot位置，点击回调
     public static GUIButton GUIAddButton(Player p, String name, LuaValue lore, String mat, boolean enchant,
-            Inventory inv, int index, LuaFunction func, LuaValue self) {
+            Inventory inv, int index, LuaFunction func) {
         var itemStack = new ItemStack(Material.getMaterial(mat.toUpperCase()), 1);
         var meta = itemStack.getItemMeta();
 
@@ -69,7 +87,7 @@ public class LuaAPI {
 
         itemStack.setItemMeta(meta);
         inv.setItem(index, itemStack);
-        var btn = new GUIButton(itemStack, self, func);
+        var btn = new GUIButton(itemStack, func);
         // p.sendMessage("AddButton3");
         LuaGUIManager.invMap.get(inv).add(btn);
 
@@ -99,16 +117,22 @@ public class LuaAPI {
         var sp = tour.room.SpecialPositions;
         var a = new LuaTable();
         sp.forEach((k, v) -> {
-            a.hashset(CoerceJavaToLua.coerce(k), CoerceJavaToLua.coerce(v));
+            var table = new LuaTable();
+            for (var i = 0; i < k.length; i++) {
+                var num = k[i];
+                table.set(i + 1, CoerceJavaToLua.coerce(num));
+            }
+            a.hashset(table, CoerceJavaToLua.coerce(v));
         });
         return a;
 
     }
 
-    public static Entity EntitySpawn(DungeonTour tour, int[] pos, String id) {
+    // 生成id对应的entityType
+    public static Entity EntitySpawn(DungeonTour tour, double x, double y, double z, String id) {
+        double[] pos = new double[] { x, y, z };
         var spawnPos = DungeonManager.GetPoint(tour.dungeon, tour.GetRoomPosition(), pos);
         var world = Main.getInstance().getServer().getWorld(tour.dungeon.Id);
-        double x, y, z;
         x = spawnPos[0] + 0.5;
         y = spawnPos[1] + 0.5;
         z = spawnPos[2] + 0.5;
@@ -157,7 +181,7 @@ public class LuaAPI {
         return item;
     }
 
-    public static ItemStack ItemChangeName(ItemStack item, String name) {
+    public static ItemStack ItemSetName(ItemStack item, String name) {
         var meta = item.getItemMeta();
         meta.setDisplayName(name);
         item.setItemMeta(meta);
@@ -168,6 +192,7 @@ public class LuaAPI {
         TourManager.EndTour(tour);
     }
 
+    // 用于全局lua注册事件，参数为：事件名,tour,回调的luaFunction
     public static void EventRegister(String name, DungeonTour tour, LuaFunction f) {
         try {
             LuaListenerManager.RegisterEvent(name, tour, f);
@@ -176,6 +201,7 @@ public class LuaAPI {
         }
     }
 
+    // 用于动态lua注册事件，参数为：事件名,tour,动态lua名,回调的luaFunction
     public static void EventRegister(String name, DungeonTour tour, String dynamicLua, LuaFunction f) {
         try {
             LuaListenerManager.RegisterEvent(name, tour, dynamicLua, f);
@@ -198,6 +224,68 @@ public class LuaAPI {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static LuaRunnable RunnableCreate(LuaFunction func) {
+        return new LuaRunnable(JavaPlugin.getPlugin(Main.class), func);
+    }
+
+    public static ScoreHelper ScoreBoardCreate(Player player) {
+        return ScoreHelper.createScore(player);
+    }
+
+    public static ScoreHelper ScoreBoardGet(Player player) {
+        return ScoreHelper.getByPlayer(player);
+    }
+
+    public static void ScoreBoardRemove(Player player) {
+        ScoreHelper.removeScore(player);
+    }
+
+    public static Particle ParticleGetType(String type) {
+        return Particle.valueOf(type.toUpperCase());
+    }
+
+    public static void ParticleSpawn(Player player, String particle, double[] loc, int count) {
+        var particleType = ParticleGetType(particle);
+        var location = new Location(player.getWorld(), loc[0], loc[1], loc[2]);
+        player.getWorld().spawnParticle(particleType, location, count);
+    }
+
+    public static void ParticleSpawn(Player player, String particle, double[] loc, int count, double ox, double oy,
+            double oz, double extra, boolean force) {
+        var particleType = ParticleGetType(particle);
+        var location = new Location(player.getWorld(), loc[0], loc[1], loc[2]);
+        player.getWorld().spawnParticle(particleType, location, count, ox, oy, oz, extra, force);
+    }
+
+    public static void ParticleSpawn(Player player, String particle, double[] loc, int count, double ox, double oy,
+            double oz, double extra, boolean force, int r, int g, int b, float size) {
+        var particleType = ParticleGetType(particle);
+        var location = new Location(player.getWorld(), loc[0], loc[1], loc[2]);
+        DustOptions dustOptions = new DustOptions(Color.fromRGB(r, g, b), size);
+        player.getWorld().spawnParticle(particleType, location, count, ox, oy, oz, extra, dustOptions, force);
+    }
+
+    public static DustOptions ParticleDustOptions(int r, int g, int b, float size) {
+        return new DustOptions(Color.fromRGB(r, g, b), size);
+    }
+
+    public static Color ParticleColor(int r, int g, int b) {
+        return Color.fromRGB(r, g, b);
+    }
+
+    public static double[] TourGetPosition(DungeonTour tour, double x, double y, double z) {
+        return DungeonManager.GetPoint(tour.dungeon, tour.GetRoomPosition(), new double[] { x, y, z });
+    }
+
+    // 将数组转换为表
+    public static LuaTable ConvertArray(Object[] array) {
+        var table = new LuaTable();
+        for (int i = 0; i < array.length; i++) {
+            table.add(CoerceJavaToLua.coerce(array[i]));
+        }
+        return table;
     }
 
 }

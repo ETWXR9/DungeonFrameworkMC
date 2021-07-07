@@ -91,7 +91,7 @@ public class TourManager implements Listener {
 
     }
 
-    // 房间防冲突
+    // 房间防冲突 -1为房间人满
     public static int GetFreeRoom(RoomInfo ri) {
         var list = new ArrayList<int[]>();
 
@@ -119,8 +119,17 @@ public class TourManager implements Listener {
     }
 
     public static void EnterRoom(DungeonTour tour, RoomInfo ri) {
+
         var p = tour.GetFirstPlayer();
         var dungeon = DungeonManager.GetDungeonInfo(ri.DungeonId);
+        // 选取Free房间
+        int index = GetFreeRoom(ri);
+        if (index == -1) {
+            p.sendMessage("该房间所有副本都已被占用");
+            return;
+        }
+
+        // 触发离开房间事件
         LeaveRoomEvent lre = new LeaveRoomEvent(tour, dungeon, ri, tour.roomIndex, p);
         Bukkit.getPluginManager().callEvent(lre);
 
@@ -129,12 +138,6 @@ public class TourManager implements Listener {
             DisableDynamicLua(tour, tour.room.Id);
         }
 
-        // 选取Free房间
-        int index = GetFreeRoom(ri);
-        if (index == -1) {
-            p.sendMessage("该房间所有副本都已被占用");
-            return;
-        }
         var point = DungeonManager.GetPoint(dungeon, ri.Rooms.get(index), ri.PlayerPosition);
         var world = Bukkit.getWorld(dungeon.Id);
         tour.player.forEach(player -> {
