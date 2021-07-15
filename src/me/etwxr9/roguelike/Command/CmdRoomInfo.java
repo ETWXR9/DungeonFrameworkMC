@@ -5,10 +5,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.etwxr9.roguelike.Main;
 import me.etwxr9.roguelike.DungeonUtil.DungeonManager;
 
 //查看当前地牢当前房间信息
@@ -43,6 +49,29 @@ public class CmdRoomInfo implements CommandInterface {
         });
         p.sendMessage(MessageFormat.format("玩家传送点：{0}", Arrays.toString(ri.PlayerPosition)));
         p.sendMessage("§b房间信息打印完毕");
+        new BukkitRunnable() {
+            private int count = 20;
+
+            @Override
+            public void run() {
+                count--;
+
+                ri.SpecialPositions.forEach((k, v) -> {
+                    var pos = DungeonManager.GetPoint(di, dm.currentPosition, k);
+                    p.getWorld().spawnParticle(Particle.REDSTONE,
+                            new Location(p.getWorld(), pos[0] + 0.5, pos[1] + 0.5, pos[2] + 0.5), 10, 0.1, 0.1, 0.1,
+                            new DustOptions(Color.AQUA, 1));
+                });
+                var pos = DungeonManager.GetPoint(di, dm.currentPosition, ri.PlayerPosition);
+                p.getWorld().spawnParticle(Particle.REDSTONE,
+                        new Location(p.getWorld(), pos[0] + 0.5, pos[1] + 0.5, pos[2] + 0.5), 10, 0.1, 0.1, 0.1,
+                        new DustOptions(Color.RED, 1));
+                if (count == 0) {
+                    cancel();
+                }
+            }
+
+        }.runTaskTimer(Main.getPlugin(Main.class), 0, 10);
         return true;
     }
 

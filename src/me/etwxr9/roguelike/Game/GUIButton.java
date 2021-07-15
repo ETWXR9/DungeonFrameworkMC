@@ -14,5 +14,4 @@ public class GUIButton {
 
     public ItemStack itemStack;
     public LuaValue func;
-
 }

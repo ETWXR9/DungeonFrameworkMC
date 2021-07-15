@@ -5,43 +5,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 
 import me.etwxr9.roguelike.Main;
 import me.etwxr9.roguelike.DungeonUtil.EventNames;
 
 public class LuaListenerManager implements Listener {
-    // Hashmap<事件名,<道具Id>>
-    // public static Map<String, List<String>> luaFuncMap = new HashMap<String,
-    // List<String>>();
-    // static {
-    // var funcs = LuaListenerManager.class.getMethods();
-    // for (Method f : funcs) {
-    // var name = f.getName();
-    // if (!name.startsWith("on")) {
-    // continue;
-    // }
-    // Main.getInstance().getServer().getLogger().info("lua事件读取 " + name);
-    // luaFuncMap.put(name, new ArrayList<String>());
-    // }
-    // }
 
-    //
     public static Map<Class<?>, Map<DungeonTour, List<LuaFunction>>> luaEventHandlers = new HashMap<Class<?>, Map<DungeonTour, List<LuaFunction>>>();
 
     public static Map<Class<?>, Map<DungeonTour, Map<String, List<LuaFunction>>>> luaEventDynamicHandlers = new HashMap<Class<?>, Map<DungeonTour, Map<String, List<LuaFunction>>>>();
 
     public static void RegisterEvent(String ename, DungeonTour tour, LuaFunction handler)
             throws ClassNotFoundException {
+        // ename = ManageEventName(ename);
+        Bukkit.getLogger().info("注册事件" + ename);
         var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
         if (!luaEventHandlers.containsKey(ec)) {
             luaEventHandlers.put(ec, new HashMap<DungeonTour, List<LuaFunction>>());
         }
         if (!luaEventHandlers.get(ec).containsKey(tour)) {
+
             luaEventHandlers.get(ec).put(tour, new ArrayList<LuaFunction>());
         }
         if (!luaEventHandlers.get(ec).get(tour).contains(handler)) {
+            if (handler == null || handler == LuaValue.NIL) {
+                throw new NullPointerException("订阅方法为空");
+            }
+            // Main.getInstance().getLogger().info("订阅方法 " + handler.classnamestub());
             luaEventHandlers.get(ec).get(tour).add(handler);
         }
 
@@ -49,6 +43,7 @@ public class LuaListenerManager implements Listener {
 
     public static void RegisterEvent(String ename, DungeonTour tour, String dynamicLua, LuaFunction handler)
             throws ClassNotFoundException {
+        ename = ManageEventName(ename);
         var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
         if (!luaEventDynamicHandlers.containsKey(ec)) {
             luaEventDynamicHandlers.put(ec, new HashMap<DungeonTour, Map<String, List<LuaFunction>>>());
@@ -67,6 +62,7 @@ public class LuaListenerManager implements Listener {
 
     public static void UnRegisterEvent(String ename, DungeonTour tour, LuaFunction handler)
             throws ClassNotFoundException {
+        ename = ManageEventName(ename);
         var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
         if (!luaEventHandlers.containsKey(ec)) {
             return;
@@ -82,6 +78,7 @@ public class LuaListenerManager implements Listener {
 
     public static void UnRegisterEvent(String ename, DungeonTour tour, String dynamicLua, LuaFunction handler)
             throws ClassNotFoundException {
+        ename = ManageEventName(ename);
         var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
         if (!luaEventDynamicHandlers.containsKey(ec)) {
             return;
@@ -117,6 +114,17 @@ public class LuaListenerManager implements Listener {
             }
             v.get(tour).get(dynamicLua).clear();
         });
+    }
+
+    public static String ManageEventName(String name) {
+        switch (name) {
+            case "EntityDamageByBlockEvent":
+            case "EntityDamageByEntityEvent":
+                return "EntityDamageEvent";
+            case "PlayerDeathEvent":
+                return "EntityDeathEvent";
+        }
+        return name;
     }
 
 }

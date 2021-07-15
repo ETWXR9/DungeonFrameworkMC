@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 
 import me.etwxr9.roguelike.Main;
 
@@ -91,20 +89,20 @@ public class LuaLoader {
                     continue;
                 }
                 GameLuas.put(gameLuaName, gameLua);
-                // 读道具事件订阅
-                var itemTable = globals.get(gameLuaName);
-                LuaValue key = LuaValue.NIL;
-                while (true) {
-                    Varargs n = itemTable.next(key);
-                    if ((key = n.arg1()).isnil())
-                        break;
-                    // LuaValue v = n.arg(2);
-                    // if (v.typename().equals("function")) {
-                    // List<String> gameList = LuaListenerManager.luaFuncMap.get(key.toString());
-                    // if (gameList != null)
-                    // gameList.add(gameLuaName);
-                    // }
-                }
+                // 读事件订阅
+                // var itemTable = globals.get(gameLuaName);
+                // LuaValue key = LuaValue.NIL;
+                // while (true) {
+                // Varargs n = itemTable.next(key);
+                // if ((key = n.arg1()).isnil())
+                // break;
+                // // LuaValue v = n.arg(2);
+                // // if (v.typename().equals("function")) {
+                // // List<String> gameList = LuaListenerManager.luaFuncMap.get(key.toString());
+                // // if (gameList != null)
+                // // gameList.add(gameLuaName);
+                // // }
+                // }
             }
         }
 

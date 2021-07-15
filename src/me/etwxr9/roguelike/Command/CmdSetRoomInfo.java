@@ -93,30 +93,28 @@ public class CmdSetRoomInfo implements CommandInterface {
                 if (args.length != 4) {
                     return false;
                 }
-                if (loc.clone().subtract(0, 1, 0).getBlock().getType() != Material.AIR) {
-                    switch (args[2]) {
-                        case "set":
-                            if (dm.currentRoom.Tags.contains(args[3])) {
-                                p.sendMessage("该Tag已经存在");
-                            } else {
-                                dm.currentRoom.Tags.add(args[3]);
-                                p.sendMessage(MessageFormat.format("设置了Tag：{0}", args[3]));
-                            }
-                            break;
+                switch (args[2]) {
+                    case "set":
+                        if (dm.currentRoom.Tags.contains(args[3])) {
+                            p.sendMessage("该Tag已经存在");
+                        } else {
+                            dm.currentRoom.Tags.add(args[3]);
+                            p.sendMessage(MessageFormat.format("设置了Tag：{0}", args[3]));
+                        }
+                        break;
 
-                        case "clear":
-                            dm.currentRoom.SpecialPositions.clear();
-                            p.sendMessage("已将当前房间所有Tags清除");
-                            break;
-                        case "unset":
-                            if (!dm.currentRoom.Tags.contains(args[3])) {
-                                p.sendMessage("该Tag不存在");
-                            } else {
-                                dm.currentRoom.Tags.remove(args[3]);
-                                p.sendMessage(MessageFormat.format("清除了Tag：{0}", args[3]));
-                            }
-                            break;
-                    }
+                    case "clear":
+                        dm.currentRoom.SpecialPositions.clear();
+                        p.sendMessage("已将当前房间所有Tags清除");
+                        break;
+                    case "unset":
+                        if (!dm.currentRoom.Tags.contains(args[3])) {
+                            p.sendMessage("该Tag不存在");
+                        } else {
+                            dm.currentRoom.Tags.remove(args[3]);
+                            p.sendMessage(MessageFormat.format("清除了Tag：{0}", args[3]));
+                        }
+                        break;
                 }
                 break;
             case "specialPosition":
@@ -127,11 +125,11 @@ public class CmdSetRoomInfo implements CommandInterface {
                     switch (args[2]) {
                         case "set":
                             if (args.length != 4) {
-                                p.sendMessage("当前参数数量" + args.length + "请打出该点的名称");
+                                p.sendMessage("请打出该点的名称");
                                 return false;
                             }
                             if (args[3].equals("")) {
-                                p.sendMessage("args[3] = " + args[3] + "请打出该点的名称");
+                                p.sendMessage("请打出该点的名称");
                                 return false;
                             }
                             // 判断玩家是否在房间内
@@ -160,6 +158,7 @@ public class CmdSetRoomInfo implements CommandInterface {
                                     .filter(sp -> Arrays.equals(sp, pos)).findFirst();
                             if (a.isPresent()) {
                                 dm.currentRoom.SpecialPositions.remove(a.get());
+                                p.sendMessage(MessageFormat.format("该位置已移除：{0},{1},{2}", pos[0], pos[1], pos[2]));
                             }
                             break;
                     }

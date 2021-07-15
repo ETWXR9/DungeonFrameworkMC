@@ -17,6 +17,8 @@ import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityDropItemEvent;
@@ -47,6 +49,7 @@ import org.bukkit.event.entity.HorseJumpEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.PigZombieAngerEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.SheepDyeWoolEvent;
 import org.bukkit.event.entity.SheepRegrowWoolEvent;
@@ -55,12 +58,14 @@ import org.bukkit.event.entity.StriderTemperatureChangeEvent;
 import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 import org.bukkit.event.entity.VillagerCareerChangeEvent;
 import org.bukkit.event.entity.VillagerReplenishTradeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
+import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
@@ -115,6 +120,7 @@ import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import me.etwxr9.roguelike.Event.EnterRoomEvent;
 import me.etwxr9.roguelike.Event.LeaveRoomEvent;
+import me.etwxr9.roguelike.Event.LuaCmdEvent;
 
 public class EventNames {
     public static List<Class<? extends Event>> Events = Arrays.asList(PlayerAnimationEvent.class,
@@ -133,8 +139,8 @@ public class EventNames {
             PlayerToggleSneakEvent.class, PlayerToggleSprintEvent.class, PlayerVelocityEvent.class,
             AreaEffectCloudApplyEvent.class, ArrowBodyCountChangeEvent.class, BatToggleSleepEvent.class,
             CreeperPowerEvent.class, EnderDragonChangePhaseEvent.class, EntityAirChangeEvent.class,
-            EntityBreedEvent.class, EntityChangeBlockEvent.class, EntityCombustEvent.class, EntityDamageEvent.class,
-            EntityDeathEvent.class, EntityDismountEvent.class, EntityDropItemEvent.class, EntityEnterBlockEvent.class,
+            EntityBreedEvent.class, EntityChangeBlockEvent.class, EntityCombustEvent.class, EntityDeathEvent.class,
+            PlayerDeathEvent.class, EntityDismountEvent.class, EntityDropItemEvent.class, EntityEnterBlockEvent.class,
             EntityEnterLoveModeEvent.class, EntityExplodeEvent.class, EntityInteractEvent.class, EntityMountEvent.class,
             EntityPickupItemEvent.class, EntityPortalEnterEvent.class, EntityPoseChangeEvent.class,
             EntityPotionEffectEvent.class, EntityRegainHealthEvent.class, EntityResurrectEvent.class,
@@ -146,11 +152,13 @@ public class EventNames {
             SheepDyeWoolEvent.class, SheepRegrowWoolEvent.class, SlimeSplitEvent.class,
             StriderTemperatureChangeEvent.class, VillagerAcquireTradeEvent.class, VillagerCareerChangeEvent.class,
             VillagerReplenishTradeEvent.class, EnchantItemEvent.class, InventoryCloseEvent.class,
-            InventoryInteractEvent.class, InventoryOpenEvent.class, PrepareAnvilEvent.class,
-            PrepareItemCraftEvent.class, PrepareItemEnchantEvent.class, PrepareSmithingEvent.class,
-            VehicleCreateEvent.class, VehicleDamageEvent.class, VehicleDestroyEvent.class, VehicleEnterEvent.class,
-            VehicleExitEvent.class, VehicleMoveEvent.class, VehicleUpdateEvent.class,
+            InventoryClickEvent.class, InventoryDragEvent.class, TradeSelectEvent.class, InventoryOpenEvent.class,
+            PrepareAnvilEvent.class, PrepareItemCraftEvent.class, PrepareItemEnchantEvent.class,
+            PrepareSmithingEvent.class, VehicleCreateEvent.class, VehicleDamageEvent.class, VehicleDestroyEvent.class,
+            VehicleEnterEvent.class, VehicleExitEvent.class, VehicleMoveEvent.class, VehicleUpdateEvent.class,
+            EntityDamageEvent.class, EntityDamageByEntityEvent.class, EntityDamageByBlockEvent.class,
+
             // 插件自定义事件
-            EnterRoomEvent.class, LeaveRoomEvent.class);
+            EnterRoomEvent.class, LeaveRoomEvent.class, LuaCmdEvent.class);
     public static Map<String, String> EventClassNames = new HashMap<String, String>();
 }

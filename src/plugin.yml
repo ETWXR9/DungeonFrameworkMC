@@ -3,6 +3,6 @@ version: "1.0"
 author: et
 name: Roguelike
 api-version: 1.16
-depend: [WorldEdit]
+depend: []
 commands:
   dfmc:

@@ -2,6 +2,7 @@ package me.etwxr9.roguelike.Game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class DungeonTour {
 
     public DungeonTour() {
         this.player = new ArrayList<Player>();
-        this.luaMap = new HashMap<String, LuaValue>();
+        this.luaMap = new LinkedHashMap<String, LuaValue>();
         this.dynamicLuaMap = new HashMap<String, LuaValue>();
         this.global = JsePlatform.standardGlobals();
     }

@@ -1,24 +1,29 @@
 package me.etwxr9.roguelike.DungeonUtil;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Particle.DustOptions;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,10 +42,17 @@ import me.etwxr9.roguelike.Game.ScoreHelper;
 import me.etwxr9.roguelike.Game.TourManager;
 
 public class LuaAPI {
-    // 加载动态lua，返回加载后的luaTable
-    public static LuaValue LuaEnable(DungeonTour tour, String lua) {
-        TourManager.EnableDynamicLua(tour, lua);
-        return (LuaTable) tour.luaMap.get(lua);
+
+    /**
+     * 加载动态lua，返回加载后的LuaTable
+     * 
+     * @param tour    DungeonTour
+     * @param luaName 要加载的lua名称
+     * @return 已加载的LuaTable
+     */
+    public static LuaValue LuaEnable(DungeonTour tour, String luaName) {
+        TourManager.EnableDynamicLua(tour, luaName);
+        return (LuaTable) tour.luaMap.get(luaName);
     }
 
     // 卸载动态lua
@@ -60,13 +72,25 @@ public class LuaAPI {
         return DungeonManager.GetDungeonInfo(id);
     }
 
-    public static Inventory GUICreate(Player p, int row) {
-        var inv = Bukkit.createInventory(p, row * 9);
-        LuaGUIManager.invMap.put(inv, new ArrayList<GUIButton>());
+    public static Inventory GUICreate(Player p, int row, String title) {
+        var inv = Bukkit.createInventory(p, row * 9, title);
+        LuaGUIManager.invMap.put(inv, new HashMap<Integer, GUIButton>());
         return inv;
     }
 
-    // 向指定inv添加按钮，参数为：玩家，物品名称，lore（一个lua字符串数组），物品材质（不分大小写），是否有附魔特效，GUI容器，slot位置，点击回调
+    /**
+     * 向指定inv添加按钮，按钮在点击后取消点击事件，执行回调函数
+     * 
+     * @param p       玩家
+     * @param name    物品名称
+     * @param lore    lore(一个lua字符串组)
+     * @param mat     物品材质（不分大小写）
+     * @param enchant 是否有附魔光效
+     * @param inv     GUI容器
+     * @param index   slot位置
+     * @param func    回调函数
+     * @return
+     */
     public static GUIButton GUIAddButton(Player p, String name, LuaValue lore, String mat, boolean enchant,
             Inventory inv, int index, LuaFunction func) {
         var itemStack = new ItemStack(Material.getMaterial(mat.toUpperCase()), 1);
@@ -89,13 +113,22 @@ public class LuaAPI {
         inv.setItem(index, itemStack);
         var btn = new GUIButton(itemStack, func);
         // p.sendMessage("AddButton3");
-        LuaGUIManager.invMap.get(inv).add(btn);
+        LuaGUIManager.invMap.get(inv).put(index, btn);
 
         return btn;
     }
 
-    public static InventoryView GUIOpen(Inventory inv) {
-        return ((Player) inv.getHolder()).openInventory(inv);
+    public static Inventory GUIOpen(Player player, Inventory inv) {
+        var view = player.openInventory(inv);
+        return view.getTopInventory();
+    }
+
+    public static void GUIDestory(Inventory inv) {
+        LuaGUIManager.DestoryGUI(inv);
+    }
+
+    public static void GUIClose(Player player) {
+        player.closeInventory();
     }
 
     public static RoomInfo TourEnterRoom(DungeonTour tour, String dungeon, String room) {
@@ -113,6 +146,12 @@ public class LuaAPI {
         return ri;
     }
 
+    /**
+     * 取得房间特殊点集<luatable{x,y,z},name>
+     * 
+     * @param tour
+     * @return
+     */
     public static LuaTable TourGetSpecialPos(DungeonTour tour) {
         var sp = tour.room.SpecialPositions;
         var a = new LuaTable();
@@ -141,23 +180,69 @@ public class LuaAPI {
         return entity;
     }
 
+    public static void EntitySetStringTag(Entity entity, String key, String content) {
+        NamespacedKey nKey = new NamespacedKey(Main.getInstance(), key);
+        if (entity == null) {
+            return;
+        }
+        PersistentDataContainer pdc = entity.getPersistentDataContainer();
+        if (pdc.has(nKey, PersistentDataType.STRING)) {
+            var str = pdc.get(nKey, PersistentDataType.STRING);
+            if (!str.equals(content)) {
+                pdc.set(nKey, PersistentDataType.STRING, content);
+            }
+        } else {
+            pdc.set(nKey, PersistentDataType.STRING, content);
+        }
+    }
+
+    public static String EntityGetStringTag(Entity entity, String key) {
+        NamespacedKey nKey = new NamespacedKey(Main.getInstance(), key);
+        if (entity == null) {
+            return null;
+        }
+
+        PersistentDataContainer pdc = entity.getPersistentDataContainer();
+        if (pdc.has(nKey, PersistentDataType.STRING)) {
+            return pdc.get(nKey, PersistentDataType.STRING);
+        } else {
+            return null;
+        }
+    }
+
     public static ItemStack ItemNew(String mat, int amount) {
         ItemStack is = new ItemStack(Material.valueOf(mat.toUpperCase()), amount);
         return is;
+    }
+
+    // 该lore参数为lua字符串数组
+    public static ItemStack ItemSetLore(ItemStack item, LuaTable lore) {
+        var meta = item.getItemMeta();
+        var loreList = new ArrayList<String>();
+        for (int i = 0; i < lore.length(); i++) {
+            loreList.add(lore.get(i + 1).toString());
+        }
+        meta.setLore(loreList);
+        item.setItemMeta(meta);
+        return item;
     }
 
     public static void PlayerGiveItem(Player p, ItemStack item) {
         p.getInventory().addItem(item);
     }
 
+    // 设定物品PersistentDataHolder的给定key的string类型的值
     public static void ItemSetStringTag(ItemStack item, String key, String content) {
         NamespacedKey nKey = new NamespacedKey(Main.getInstance(), key);
+        if (item == null) {
+            return;
+        }
         ItemMeta itemMeta = item.getItemMeta();
         PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
         if (pdc.has(nKey, PersistentDataType.STRING)) {
             var str = pdc.get(nKey, PersistentDataType.STRING);
-            if (!str.equals(key)) {
-                pdc.set(nKey, PersistentDataType.STRING, key);
+            if (!str.equals(content)) {
+                pdc.set(nKey, PersistentDataType.STRING, content);
             }
         } else {
             pdc.set(nKey, PersistentDataType.STRING, content);
@@ -165,9 +250,22 @@ public class LuaAPI {
         item.setItemMeta(itemMeta);
     }
 
+    /**
+     * 取得PersistentDataContainer中的字符串数据，如果item为null则返回null
+     * 
+     * @param item
+     * @param key
+     * @return
+     */
     public static String ItemGetStringTag(ItemStack item, String key) {
         NamespacedKey nKey = new NamespacedKey(Main.getInstance(), key);
+        if (item == null) {
+            return null;
+        }
         ItemMeta itemMeta = item.getItemMeta();
+        if (itemMeta == null) {
+            return null;
+        }
         PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
         if (pdc.has(nKey, PersistentDataType.STRING)) {
             return pdc.get(nKey, PersistentDataType.STRING);
@@ -188,6 +286,21 @@ public class LuaAPI {
         return item;
     }
 
+    public static PotionMeta ItemGetPotionMeta(ItemStack item) {
+        if (item == null) {
+            return null;
+        }
+        if (item.getType() != Material.POTION) {
+            return null;
+        }
+        return (PotionMeta) item.getItemMeta();
+    }
+
+    /**
+     * 为防止在事件中调用产生错误，会在下一帧执行。
+     * 
+     * @param tour
+     */
     public static void TourEnd(DungeonTour tour) {
         TourManager.EndTour(tour);
     }
@@ -253,10 +366,10 @@ public class LuaAPI {
     }
 
     public static void ParticleSpawn(Player player, String particle, double[] loc, int count, double ox, double oy,
-            double oz, double extra, boolean force) {
+            double oz, double extra) {
         var particleType = ParticleGetType(particle);
         var location = new Location(player.getWorld(), loc[0], loc[1], loc[2]);
-        player.getWorld().spawnParticle(particleType, location, count, ox, oy, oz, extra, force);
+        player.getWorld().spawnParticle(particleType, location, count, ox, oy, oz, extra);
     }
 
     public static void ParticleSpawn(Player player, String particle, double[] loc, int count, double ox, double oy,
@@ -279,13 +392,69 @@ public class LuaAPI {
         return DungeonManager.GetPoint(tour.dungeon, tour.GetRoomPosition(), new double[] { x, y, z });
     }
 
-    // 将数组转换为表
-    public static LuaTable ConvertArray(Object[] array) {
+    public static LuaTable TourGetPositionTable(DungeonTour tour, double x, double y, double z) {
         var table = new LuaTable();
-        for (int i = 0; i < array.length; i++) {
-            table.add(CoerceJavaToLua.coerce(array[i]));
+        var pos = DungeonManager.GetPoint(tour.dungeon, tour.GetRoomPosition(), new double[] { x, y, z });
+        for (int i = 0; i < pos.length; i++) {
+            table.set(i + 1, CoerceJavaToLua.coerce(pos[i]));
         }
         return table;
+    }
+
+    // 将数组转换为表
+    public static LuaTable ConvertArrayToTable(Object[] array) {
+        var table = new LuaTable();
+        for (int i = 0; i < array.length; i++) {
+            table.set(i + 1, CoerceJavaToLua.coerce(array[i]));
+        }
+        return table;
+    }
+
+    /**
+     * 将luatable转换为java数组，用于为java函数传递可变参数
+     * 
+     * @param table
+     * @param toClass 要转换的类，一般使用getClass()取得
+     * @return Object[] 如果table的内容不一致，将返回null
+     */
+    public static Object[] ConvertTableToArray(LuaTable table, Class<? extends Event> toClass) {
+        var array = Array.newInstance(toClass, table.length());
+        for (int i = 0; i < table.length(); i++) {
+            try {
+                var v = table.get(i + 1).touserdata(toClass);
+                Array.set(array, i, v);
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return (Object[]) array;
+    }
+
+    /**
+     * 取得org.bukkit.Sound枚举
+     * 
+     * @param name
+     * @return
+     */
+    public static Sound GetSound(String name) {
+        return Sound.valueOf(name.toUpperCase());
+    }
+
+    public static Effect GetEffect(String name) {
+        return Effect.valueOf(name.toUpperCase());
+    }
+
+    public static Color GetColor(int r, int g, int b) {
+        return Color.fromRGB(r, g, b);
+    }
+
+    public static Material GetMaterial(String mat) {
+        return Material.valueOf(mat.toUpperCase());
+    }
+
+    public static String GetClassName(Class<? extends Event> c) {
+        return c.getCanonicalName();
     }
 
 }

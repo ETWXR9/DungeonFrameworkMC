@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import com.github.fierioziy.particlenativeapi.api.ParticleNativeAPI;
-import com.github.fierioziy.particlenativeapi.core.ParticleNativeCore;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
@@ -32,6 +31,7 @@ import me.etwxr9.roguelike.Command.CmdDeleteWorld;
 import me.etwxr9.roguelike.Command.CmdDungeonInfo;
 import me.etwxr9.roguelike.Command.CmdEnterDungeon;
 import me.etwxr9.roguelike.Command.CmdGameTest;
+import me.etwxr9.roguelike.Command.CmdLuaCmd;
 // import me.etwxr9.roguelike.Command.CmdGameTest;
 // import me.etwxr9.roguelike.Command.CmdLuaTest;
 import me.etwxr9.roguelike.Command.CmdNewRoom;
@@ -66,10 +66,6 @@ public class Main extends JavaPlugin {
         // getLogger().info(System.getProperty("java.class.path"));
         // 管理配置文件
         saveDefaultConfig();
-        // 加载粒子系统
-
-        // ... or generate it using core module ("this" is Your plugin instance)
-        api = ParticleNativeCore.loadAPI(this);
 
         // lua
         global = JsePlatform.standardGlobals();
@@ -80,12 +76,10 @@ public class Main extends JavaPlugin {
         // 加载DungeonInfo
         DungeonManager.LoadDungeons();
         getLogger().info("读取地牢数据!");
-        // EnemyManager.LoadEnemyData();
-        // getLogger().info("读取敌人数据!");
         // 注册指令
         cmdHandler = new CommandHandler();
-        cmdHandler.register("rl", new BaseCmd());
-        cmdHandler.register("setDefaultWorld", new CmdSetDefaultWorld());
+        cmdHandler.register("dfmc", new BaseCmd());
+        cmdHandler.register("defaultWorldSet", new CmdSetDefaultWorld());
         cmdHandler.register("createDungeon", new CmdCreateDungeon());
         cmdHandler.register("deleteWorld", new CmdDeleteWorld());
         cmdHandler.register("deleteRoom", new CmdDeleteRoom());
@@ -96,25 +90,55 @@ public class Main extends JavaPlugin {
         cmdHandler.register("newRoom", new CmdNewRoom());
         cmdHandler.register("copyRoom", new CmdCopyRoom());
         cmdHandler.register("updateRoom", new CmdUpdateRoom());
+        cmdHandler.register("luaCmd", new CmdLuaCmd());
         cmdHandler.register("gameTest", new CmdGameTest());
+        cmdHandler.registerCB("gameTest", new CmdGameTest());
         this.getCommand("dfmc").setExecutor(cmdHandler);
         this.getCommand("dfmc").setTabCompleter(new BaseTabCompleter());
 
         // 注册事件
-        for (Class<? extends Event> clazz : EventNames.Events) {
+        EventNames.Events.forEach(clazz -> {
             EventNames.EventClassNames.put(clazz.getSimpleName(), clazz.getCanonicalName());
-            getLogger().info("注册事件 " + clazz);
             try {
                 getServer().getPluginManager().registerEvent(clazz, new Listener() {
-                }, EventPriority.NORMAL, new luaEventExcutor(), this, false);
+                }, EventPriority.NORMAL, new EventExecutor() {
+                    @Override
+                    public void execute(Listener listener, Event event) throws EventException {
+                        if (event == null) {
+                            return;
+                        }
+                        if (!event.getClass().equals(clazz)) {
+                            return;
+                        }
+
+                        var handlers = LuaListenerManager.luaEventHandlers.get(event.getClass());
+                        if (handlers != null) {
+                            // 执行handlers
+                            handlers.forEach((tour, funcs) -> {
+
+                                funcs.forEach(f -> {
+                                    f.call(CoerceJavaToLua.coerce(event));
+                                });
+                            });
+                        }
+                        var dynamicHandlers = LuaListenerManager.luaEventDynamicHandlers.get(event.getClass());
+                        if (dynamicHandlers != null) {
+                            dynamicHandlers.forEach((tour, luas) -> {
+                                luas.forEach((lua, funcs) -> {
+                                    funcs.forEach(f -> {
+                                        f.call(CoerceJavaToLua.coerce(event));
+                                    });
+                                });
+
+                            });
+                        }
+
+                    }
+                }, this, false);
             } catch (Exception e) {
                 getLogger().info("事件 " + clazz + " 注册出错! " + e.getMessage());
-                continue;
             }
-        }
-        // EventNames.Events.stream().forEach(clazz -> {
-
-        // });
+        });
         getServer().getPluginManager().registerEvents(new TourManager(), this);
         getServer().getPluginManager().registerEvents(new LuaListenerManager(), this);
         getServer().getPluginManager().registerEvents(new LuaGUIManager(), this);
@@ -133,34 +157,4 @@ public class Main extends JavaPlugin {
     public void onDisable() {
     }
 
-    private final class luaEventExcutor implements EventExecutor {
-
-        @Override
-        public void execute(Listener listener, Event event) throws EventException {
-            if (event == null) {
-                return;
-            }
-            var handlers = LuaListenerManager.luaEventHandlers.get(event.getClass());
-            if (handlers != null) {
-                handlers.forEach((tour, funcs) -> {
-                    funcs.forEach(f -> {
-                        f.call(CoerceJavaToLua.coerce(event));
-                    });
-                });
-            }
-            var dynamicHandlers = LuaListenerManager.luaEventDynamicHandlers.get(event.getClass());
-            if (dynamicHandlers != null) {
-                dynamicHandlers.forEach((tour, luas) -> {
-                    luas.forEach((lua, funcs) -> {
-                        funcs.forEach(f -> {
-                            f.call(CoerceJavaToLua.coerce(event));
-                        });
-                    });
-
-                });
-            }
-
-        }
-
-    }
 }

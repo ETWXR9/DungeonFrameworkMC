@@ -45,7 +45,7 @@ public class ScoreHelper {
 
     private ScoreHelper(Player player) {
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        sidebar = scoreboard.registerNewObjective("sidebar", "dummy");
+        sidebar = scoreboard.registerNewObjective("sidebar", "dummy", "default");
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
         // Create Teams
         for (int i = 1; i <= 15; i++) {

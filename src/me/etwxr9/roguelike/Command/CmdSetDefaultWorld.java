@@ -10,33 +10,35 @@ import org.bukkit.entity.Player;
 
 import me.etwxr9.roguelike.Main;
 
-public class CmdSetDefaultWorld implements CommandInterface{
+public class CmdSetDefaultWorld implements CommandInterface {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (args.length != 2)return false;
+        if (args.length != 2)
+            return false;
 
         Player p = (Player) sender;
         FileConfiguration config = Main.getInstance().getConfig();
         String worldName = args[1];
 
-        if (config.getString("DefaultWorld")==null) {
+        if (config.getString("DefaultWorld") == null) {
             config.addDefault("DefaultWorld", worldName);
             config.options().copyDefaults(true);
-        }else{
+        } else {
             config.set("DefaultWorld", worldName);
         }
         Main.getInstance().saveConfig();
-        p.sendMessage("已经将 "+worldName+" 设置为默认世界！");
+        p.sendMessage("已经将 " + worldName + " 设置为默认世界！");
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length != 2)return null;
+        if (args.length != 2)
+            return null;
         var worldNameList = new ArrayList<String>();
-        Main.getInstance().getServer().getWorlds().forEach(w->worldNameList.add(w.getName()));
+        Main.getInstance().getServer().getWorlds().forEach(w -> worldNameList.add(w.getName()));
         return worldNameList;
     }
-    
+
 }

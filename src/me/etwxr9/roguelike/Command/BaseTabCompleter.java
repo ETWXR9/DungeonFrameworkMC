@@ -15,7 +15,8 @@ public class BaseTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 0) return null;
+        if (args.length == 0)
+            return null;
         if (args.length == 1) {
             final List<String> completions = new ArrayList<>();
             // copy matches of first argument from list (ex: if first arg is 'm' will return
@@ -23,11 +24,12 @@ public class BaseTabCompleter implements TabCompleter {
             StringUtil.copyPartialMatches(args[0], Main.getInstance().cmdHandler.commandList(), completions);
             // sort the list
             Collections.sort(completions);
-            completions.remove("rl");
+            completions.remove("dfmc");
             return completions;
         } else {
-            if (Main.getInstance().cmdHandler.getExecutor(args[0]) == null)return null;
-            //当有两个以上参数时，使用subcommand提供的onTabComplete
+            if (Main.getInstance().cmdHandler.getExecutor(args[0]) == null)
+                return null;
+            // 当有两个以上参数时，使用subcommand提供的onTabComplete
             return Main.getInstance().cmdHandler.getExecutor(args[0]).onTabComplete(sender, command, alias, args);
         }
 

@@ -320,14 +320,15 @@ public class DungeonManager {
 
     // 返回对应DungeonInfo，没有则返回null
     public static DungeonInfo GetDungeonInfo(String worldName) {
-        Main.getInstance().getLogger().info("准备遍历DI查找" + worldName);
+        // Main.getInstance().getLogger().info("准备遍历DI查找" + worldName);
         for (DungeonInfo d : diList) {
-            Main.getInstance().getLogger().info("遍历DI中：" + d.Id);
+            // Main.getInstance().getLogger().info("遍历DI中：" + d.Id);
             if (worldName.equals(d.Id)) {
-                Main.getInstance().getLogger().info("遍历DI" + d.Id + " 匹配");
+                // Main.getInstance().getLogger().info("遍历DI" + d.Id + " 匹配");
                 return d;
             }
         }
+        Main.getInstance().getLogger().info("未能查找到地牢" + worldName);
         return null;
     }
 
