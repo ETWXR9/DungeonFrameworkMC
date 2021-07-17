@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.etwxr9</groupId>
+  <artifactId>dfmc</artifactId>
+  <version>a</version>
+
+  <name>dfmc</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  <repositories>
+    <!-- This adds the Spigot Maven repository to the build -->
+    <repository>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    </repository>
+    <!-- FAWE API-->
+    <repository>
+      <id>IntellectualSites</id>
+      <url>https://mvn.intellectualsites.com/content/groups/public/</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+
+
+  <dependencies>
+
+    <dependency>
+      <groupId>com.thoughtworks.qdox</groupId>
+      <artifactId>qdox</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+
+
+    <!-- FAWE Core API -->
+    <dependency>
+      <groupId>com.intellectualsites.fawe</groupId>
+      <artifactId>FAWE-Core</artifactId>
+      <version>1.16-725</version>
+      
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- FAWE Bukkit API -->
+    <dependency>
+      <groupId>com.intellectualsites.fawe</groupId>
+      <scope>provided</scope>
+      <artifactId>FAWE-Bukkit</artifactId>
+      <version>1.16-725</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>FAWE-Core</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+
+    </dependency>
+
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.76</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.luaj</groupId>
+      <artifactId>luaj-jse</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.16.5-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <pluginManagement>
+      <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.1</version>
+          <configuration>
+            <forceJavacCompilerUse>true</forceJavacCompilerUse>
+            <fork>true</fork>
+            <executable>C:\Program Files\AdoptOpenJDK\jdk-11.0.10.9-hotspot\bin\javac.exe</executable>
+            <compilerArgs>
+              <arg>-parameters</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

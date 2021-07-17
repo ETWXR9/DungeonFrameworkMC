@@ -1,0 +1,11 @@
+main: com.etwxr9.dfmc.Main
+version: "1.0"
+author: etwxr9
+name: DFMC
+api-version: 1.16
+depend: []
+softdepend: [FastAsyncWorldEdit]
+commands:
+  dfmc:
+     description: DFMC commands
+     default: op
