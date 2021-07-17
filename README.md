@@ -4,8 +4,8 @@
 * 通过在世界中预制好封闭房间、将同一房间复制多个副本，来实现多玩家同时体验独立的游戏流程，而不会冲突。
 * 插件提供lua脚本功能，可自行实现lua脚本、动态加载/卸载lua逻辑。从而自由搭建roguelike、团队副本、pvp、小游戏等副本式游戏玩法。
 * 在lua脚本中，用户可以操作副本游戏流程，创建UI和按钮，生成物品、实体、粒子等，目前还在进一步添加逻辑。且用户可在lua中利用luaJ的功能直接创建和操作java对象实例。
-* 副本房间编辑功能，完成度90%。
-* lua配置功能 70%
+* 副本房间编辑功能，基本完成。
+* lua配置功能 90%
 
 ## 地牢副本编辑
 * /dfmc createdungeon id \<dungeon x> \<y> \<z> \<room x> \<y> \<z> \<tags...> 该指令可创建一虚空世界，按照第一个三维坐标设定地牢房间容量，第二个坐标设定单个房间的大小。同时会将玩家传送到该地牢的默认房间中。
@@ -29,12 +29,21 @@
 ## lua脚本功能
 * 插件的lua脚本存放在配置目录下多个不同位置。
 
-* lua分三类：全局、动态、房间。全局指的是tour初始化时就加载的lua，tour结束之前始终加载；动态lua是tour初始化时不加载，必须通过调用API加载的lua脚本，也可以中途卸载；房间lua是一类特殊的动态lua，它在tour更换房间时自动加载和卸载，不可手动控制。
+* lua分两类：全局、地牢。全局lua是指在服务器全局范围运行的lua脚本；地牢lua指的是在每个DungeonTour范围内运行的脚本。
+* 全局和地牢lua各自再分成两类：永久lua和动态lua。永久lua是指服务器加载时/DungeonTour加载时就随之加载的lua脚本。动态lua是指运行中途通过LuaAPI的函数进行加载和卸载的lua脚本。房间lua是一类特殊的动态lua，它在DungeonTour更换房间时自动加载和卸载，不可手动控制。
 
 * 由于lua都在同一个环境之下，因此不得存在重名lua脚本。
 
 * 所有lua脚本通过两种方式执行逻辑：一是在其被加载时，调用其init()函数、在其被卸载时，调用其close()函数；二是通过API订阅事件，将自身的function变量添加入订阅列表，服务器事件发生时就会执行，lua卸载时自动注销其订阅。
 
-* 本插件使用luaj作为脚本引擎。插件提供一个LuaAPI类供所有lua直接使用，包装了一些较为常用的函数。用户也可以直接使用luajava.newInstance来创建任意java对象。luaj在编写lua时有一些规则，例如lua在调用java函数时必须使用冒号而不是点（如LuaAPI:PlayerSendMessage(player,"msg")），而由java调用的lua函数在声明时则不能使用冒号(如function MyLua.MyFunc(arg))。
+* 本插件使用luaj作为脚本引擎。插件提供一个LuaAPI类供所有lua直接使用，包装了一些较为常用的函数，同时插件提供一个LuaAPI.lua作为编写脚本时自动补全函数名用，请把它放在插件配置目录的LuaAPI/下。
 
-* 对于需要传递枚举参数的java函数，一部分进行了包装，可以传string（如物品附魔）；其他（如Fox.Type）则需要用luajava.bindClass(classpath)来取得该枚举类
+* 用户也可以直接使用luajava.newInstance来创建任意java对象、使用luajava.bindClass来绑定任意java类。包括其他插件的类。
+
+* lua脚本在编写lua时有一些规则，例如lua在调用java函数时必须使用冒号而不是点（如LuaAPI:PlayerSendMessage(player,"msg")），而由java调用的lua函数在声明时则不能使用冒号(如function MyLua.onPlayerDeath(PlayerDeathEvent))。
+
+* 对于需要传递枚举参数的java函数，一部分进行了包装，可以传string（如Material、Sound、Particle）；其他（如Fox.Type）则需要用luajava.bindClass(classpath)来取得该枚举类
+
+## 示例
+* 本插件带有一个小游戏demo，运行在paper 1.16.5服务端。用作lua示例。这是一个roguelike游戏，以炼金合成为主题。其实现了地图UI、合成UI、交易UI；敌人生成与管理、采集物随机生成与采集逻辑、粒子生成等基于事件的玩法逻辑。
+
