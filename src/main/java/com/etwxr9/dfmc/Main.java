@@ -24,6 +24,7 @@ import com.etwxr9.dfmc.Command.CommandHandler;
 import com.etwxr9.dfmc.Dungeon.DungeonManager;
 import com.etwxr9.dfmc.Game.TourManager;
 import com.etwxr9.dfmc.Lua.DungeonLuaManager;
+import com.etwxr9.dfmc.Lua.GlobalLuaListenerManager;
 import com.etwxr9.dfmc.Lua.GlobalLuaManager;
 import com.etwxr9.dfmc.Lua.LuaAPI;
 import com.etwxr9.dfmc.Lua.DungeonLuaListenerManager;
@@ -54,6 +55,7 @@ public class Main extends JavaPlugin {
     public DungeonLuaManager dungeonLuaManager;
     public GlobalLuaManager globalLuaManager;
     public DungeonLuaListenerManager luaListenerManager = DungeonLuaListenerManager.getInstance();
+    public GlobalLuaListenerManager globalLuaListenerManager = GlobalLuaListenerManager.getInstance();
 
     @Override
     public void onEnable() {
@@ -61,6 +63,70 @@ public class Main extends JavaPlugin {
         // getLogger().info(System.getProperty("java.class.path"));
         // 管理配置文件
         saveDefaultConfig();
+
+        // 注册事件
+        EventNames.Events.forEach(clazz -> {
+            EventNames.EventClassNames.put(clazz.getSimpleName(), clazz.getCanonicalName());
+            try {
+                getServer().getPluginManager().registerEvent(clazz, new Listener() {
+                }, EventPriority.NORMAL, new EventExecutor() {
+                    @Override
+                    public void execute(Listener listener, Event event) throws EventException {
+                        if (event == null) {
+                            return;
+                        }
+                        if (!event.getClass().equals(clazz)) {
+                            return;
+                        }
+                        // 调用全局永久lua
+                        var globalLuaEventHandlers = globalLuaListenerManager.luaEventHandlers.get(event.getClass());
+                        if (globalLuaEventHandlers != null) {
+                            // 执行handlers
+                            globalLuaEventHandlers.forEach((f) -> {
+                                f.call(CoerceJavaToLua.coerce(event));
+                            });
+                        }
+                        // 调用全局动态lua
+                        var dynamicLuaEventHandlers = globalLuaListenerManager.dynamicLuaEventHandlers
+                                .get(event.getClass());
+                        if (dynamicLuaEventHandlers != null) {
+                            // 执行handlers
+                            dynamicLuaEventHandlers.forEach((lua, funcs) -> {
+                                funcs.forEach(f -> {
+                                    f.call(CoerceJavaToLua.coerce(event));
+                                });
+
+                            });
+                        }
+                        // 调用地牢永久lua
+                        var dungeonLuaEventHandlers = luaListenerManager.dungeonLuaEventHandlers.get(event.getClass());
+                        if (dungeonLuaEventHandlers != null) {
+                            // 执行handlers
+                            dungeonLuaEventHandlers.forEach((tour, funcs) -> {
+                                funcs.forEach(f -> {
+                                    f.call(CoerceJavaToLua.coerce(event));
+                                });
+                            });
+                        }
+                        // 调用地牢动态lua
+                        var dungeonDynamicLuaEventHandlers = luaListenerManager.dungeonDynamicLuaEventHandlers
+                                .get(event.getClass());
+                        if (dungeonDynamicLuaEventHandlers != null) {
+                            dungeonDynamicLuaEventHandlers.forEach((tour, luas) -> {
+                                luas.forEach((lua, funcs) -> {
+                                    funcs.forEach(f -> {
+                                        f.call(CoerceJavaToLua.coerce(event));
+                                    });
+                                });
+
+                            });
+                        }
+                    }
+                }, this, false);
+            } catch (Exception e) {
+                getLogger().info("事件 " + clazz + " 注册出错! " + e.getMessage());
+            }
+        });
 
         // 加载全局lua
         globalLuaManager = GlobalLuaManager.getInstance();
@@ -71,6 +137,7 @@ public class Main extends JavaPlugin {
         dungeonLuaManager = DungeonLuaManager.getInstance();
         dungeonLuaManager.LoadDungeonPermanentLuas();
         dungeonLuaManager.LoadDungeonDynamicLuas();
+
         getLogger().info("读取lua数据完毕!");
         // 加载DungeonInfo
         DungeonManager.LoadDungeons();
@@ -95,48 +162,6 @@ public class Main extends JavaPlugin {
         this.getCommand("dfmc").setExecutor(cmdHandler);
         this.getCommand("dfmc").setTabCompleter(new BaseTabCompleter());
 
-        // 注册事件
-        EventNames.Events.forEach(clazz -> {
-            EventNames.EventClassNames.put(clazz.getSimpleName(), clazz.getCanonicalName());
-            try {
-                getServer().getPluginManager().registerEvent(clazz, new Listener() {
-                }, EventPriority.NORMAL, new EventExecutor() {
-                    @Override
-                    public void execute(Listener listener, Event event) throws EventException {
-                        if (event == null) {
-                            return;
-                        }
-                        if (!event.getClass().equals(clazz)) {
-                            return;
-                        }
-
-                        var handlers = luaListenerManager.dungeonLuaEventHandlers.get(event.getClass());
-                        if (handlers != null) {
-                            // 执行handlers
-                            handlers.forEach((tour, funcs) -> {
-                                funcs.forEach(f -> {
-                                    f.call(CoerceJavaToLua.coerce(event));
-                                });
-                            });
-                        }
-                        var dynamicHandlers = luaListenerManager.dungeonDynamicLuaEventHandlers.get(event.getClass());
-                        if (dynamicHandlers != null) {
-                            dynamicHandlers.forEach((tour, luas) -> {
-                                luas.forEach((lua, funcs) -> {
-                                    funcs.forEach(f -> {
-                                        f.call(CoerceJavaToLua.coerce(event));
-                                    });
-                                });
-
-                            });
-                        }
-
-                    }
-                }, this, false);
-            } catch (Exception e) {
-                getLogger().info("事件 " + clazz + " 注册出错! " + e.getMessage());
-            }
-        });
         getServer().getPluginManager().registerEvents(TourManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(LuaGUIManager.getInstance(), this);
         // 如果没有配置目录，创建。

@@ -43,7 +43,7 @@ public class DungeonManager {
     private static List<DungeonInfo> diList = new ArrayList<DungeonInfo>();
 
     // 取得空房间坐标
-    private static int[] GetEmptyRoom(DungeonInfo di) {
+    public static int[] GetEmptyRoom(DungeonInfo di) {
 
         if (di.EmptyRoomList.size() == 0) {
             return null;
@@ -208,6 +208,20 @@ public class DungeonManager {
         }
     }
 
+    // 返回对应DungeonInfo，没有则返回null
+    public static DungeonInfo GetDungeonInfo(String worldName) {
+        // Main.getInstance().getLogger().info("准备遍历DI查找" + worldName);
+        for (DungeonInfo d : diList) {
+            // Main.getInstance().getLogger().info("遍历DI中：" + d.Id);
+            if (worldName.equals(d.Id)) {
+                // Main.getInstance().getLogger().info("遍历DI" + d.Id + " 匹配");
+                return d;
+            }
+        }
+        Main.getInstance().getLogger().info("未能查找到地牢" + worldName);
+        return null;
+    }
+
     // 新建房间并传送玩家
     public static RoomInfo NewRoom(Player p, DungeonInfo dungeon, String id) {
         var point = GetEmptyRoom(dungeon);
@@ -236,119 +250,6 @@ public class DungeonManager {
         dm.TeleportPlayerToRoom(dungeon, newRoom);
         // p.teleport(new Location(p.getWorld(), x, y, z));
         return newRoom;
-    }
-
-    // 复制房间（count为-1时为更新房间）
-    public void CloneRoom(Player p, int count) {
-        // 检查是否有WE
-        if (!Bukkit.getServer().getPluginManager().getPlugin("FastAsyncWorldEdit").isEnabled()) {
-            p.sendMessage("§c§l未检测到FastAsyncWorldEdit插件，无法执行复制操作");
-        }
-
-        if (currentDungeon == null) {
-            return;
-        }
-        var ri = currentRoom;
-        if (ri == null) {
-            return;
-        }
-        var begin = GetPoint(currentDungeon, ri.Rooms.get(0), new int[] { 0, 0, 0 });
-        var end = GetPoint(currentDungeon, ri.Rooms.get(0), currentDungeon.RoomSize);
-
-        p.sendMessage(count == -1 ? "准备更新 " + (ri.Rooms.size() - 1) + " 个房间" : "准备复制 " + count + " 个房间");
-        // USE WEAPI
-        var vbegin = BlockVector3.at(begin[0], begin[1], begin[2]);
-        var vend = BlockVector3.at(end[0] - 1, end[1] - 1, end[2] - 1);
-        CuboidRegion region = new CuboidRegion(vbegin, vend);
-        BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-
-        try (EditSession editSession = new EditSessionBuilder(BukkitAdapter.adapt(p.getWorld())).build()) {
-            ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(editSession, region, clipboard,
-                    region.getMinimumPoint());
-            try {
-                forwardExtentCopy.setCopyingEntities(false);
-                Operations.complete(forwardExtentCopy);
-            } catch (WorldEditException e) {
-                e.printStackTrace();
-            }
-
-        }
-        p.sendMessage("房间数据进入剪贴版，开始执行");
-
-        TaskManager.IMP.async(new Runnable() {
-            @Override
-            public void run() {
-                if (count == -1) {
-                    for (int i = 1; i < ri.Rooms.size(); i++) {
-                        var des = GetPoint(currentDungeon, ri.Rooms.get(i), new int[] { 0, 0, 0 });
-                        p.sendMessage(MessageFormat.format("更新房间{0}", Arrays.toString(des)));
-
-                        try (EditSession editSession = new EditSessionBuilder(BukkitAdapter.adapt(p.getWorld()))
-                                .build()) {
-                            Operation operation = new ClipboardHolder(clipboard).createPaste(editSession)
-                                    .to(BlockVector3.at(des[0], des[1], des[2])).build();
-                            try {
-                                Operations.complete(operation);
-                            } catch (WorldEditException e) {
-                                e.printStackTrace();
-                            }
-                            p.sendMessage("更新完毕");
-                        }
-                    }
-                    p.sendMessage("全部更新完毕");
-                } else {
-                    for (int i = 0; i < count; i++) {
-                        var emptyRoom = DungeonManager.GetEmptyRoom(currentDungeon);
-                        var des = GetPoint(currentDungeon, emptyRoom, new int[] { 0, 0, 0 });
-                        p.sendMessage(MessageFormat.format("向{0}复制房间", Arrays.toString(des)));
-                        try (EditSession editSession = new EditSessionBuilder(BukkitAdapter.adapt(p.getWorld()))
-                                .build()) {
-                            Operation operation = new ClipboardHolder(clipboard).createPaste(editSession)
-                                    .to(BlockVector3.at(des[0], des[1], des[2])).build();
-                            try {
-                                Operations.complete(operation);
-                            } catch (WorldEditException e) {
-                                e.printStackTrace();
-                            }
-                            p.sendMessage("复制完毕");
-                            currentRoom.Rooms.add(emptyRoom);
-                            currentDungeon.EmptyRoomList.remove(emptyRoom);
-                        }
-                    }
-                    TaskManager.IMP.sync(new RunnableVal<Integer>() {
-                        @Override
-                        public void run(Integer a) {
-                            SaveDungeon();
-                            p.sendMessage("全部复制完毕");
-                        }
-                    });
-
-                }
-                TaskManager.IMP.sync(new RunnableVal<Integer>() {
-                    @Override
-                    public void run(Integer a) {
-                        Bukkit.getWorld(currentDungeon.Id).save();
-                        p.sendMessage("世界已保存");
-                    }
-                });
-
-            }
-        });
-
-    }
-
-    // 返回对应DungeonInfo，没有则返回null
-    public static DungeonInfo GetDungeonInfo(String worldName) {
-        // Main.getInstance().getLogger().info("准备遍历DI查找" + worldName);
-        for (DungeonInfo d : diList) {
-            // Main.getInstance().getLogger().info("遍历DI中：" + d.Id);
-            if (worldName.equals(d.Id)) {
-                // Main.getInstance().getLogger().info("遍历DI" + d.Id + " 匹配");
-                return d;
-            }
-        }
-        Main.getInstance().getLogger().info("未能查找到地牢" + worldName);
-        return null;
     }
 
     // 返回指定地牢坐标中的最靠前空房间（null房间），没有空房间返回null

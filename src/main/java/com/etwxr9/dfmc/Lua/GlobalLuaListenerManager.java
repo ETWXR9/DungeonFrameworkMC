@@ -8,6 +8,7 @@ import java.util.Map;
 import com.etwxr9.dfmc.Main;
 import com.etwxr9.dfmc.Utility.EventNames;
 
+import org.bukkit.Bukkit;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 
@@ -29,7 +30,6 @@ public class GlobalLuaListenerManager {
     public Map<Class<?>, Map<String, List<LuaFunction>>> dynamicLuaEventHandlers = new HashMap<Class<?>, Map<String, List<LuaFunction>>>();
 
     public void RegisterEvent(String ename, LuaFunction handler) throws ClassNotFoundException {
-        // ename = ManageEventName(ename);
         // Bukkit.getLogger().info("注册事件" + ename);
         var ec = Class.forName(EventNames.EventClassNames.get(ename), false, Main.class.getClassLoader());
         if (!luaEventHandlers.containsKey(ec)) {

@@ -58,6 +58,7 @@ public final class GlobalLuaManager {
 
     // 加载全局永久lua
     public void LoadGlobalPermanentLuas() {
+        global.load("LuaAPI = luajava.bindClass([[" + LuaAPI.class.getCanonicalName() + "]])").call();
         File globalLuaDir = new File(
                 Main.getInstance().getDataFolder().getAbsolutePath().toString() + "/GlobalPermanentLua/");
         if (!globalLuaDir.exists()) {

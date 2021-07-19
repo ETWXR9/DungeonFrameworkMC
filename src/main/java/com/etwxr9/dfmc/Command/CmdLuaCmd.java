@@ -20,15 +20,11 @@ public class CmdLuaCmd implements CommandInterface {
             return false;
         }
         var p = (Player) sender;
-        var tour = TourManager.getInstance().GetTour(p);
-        if (tour == null) {
-            return true;
-        }
         LuaTable table = new LuaTable();
         for (int i = 0; i < args.length - 1; i++) {
             table.set(i + 1, args[i + 1]);
         }
-        LuaCmdEvent lce = new LuaCmdEvent(tour, tour.dungeon, tour.room, tour.roomIndex, tour.GetFirstPlayer(), table);
+        LuaCmdEvent lce = new LuaCmdEvent(p, table);
         Bukkit.getPluginManager().callEvent(lce);
         return true;
     }

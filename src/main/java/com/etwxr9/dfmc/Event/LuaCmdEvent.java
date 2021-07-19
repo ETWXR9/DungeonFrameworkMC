@@ -10,19 +10,7 @@ import org.bukkit.event.HandlerList;
 import org.luaj.vm2.LuaTable;
 
 public class LuaCmdEvent extends Event {
-    public LuaCmdEvent(DungeonTour tour, DungeonInfo di, RoomInfo ri, int roomIndex, Player player, LuaTable args) {
-        this.dt = tour;
-        this.di = di;
-        this.ri = ri;
-        this.roomIndex = roomIndex;
-        this.player = player;
-        this.args = args;
-    }
 
-    private DungeonTour dt;
-    private DungeonInfo di;
-    private RoomInfo ri;
-    private int roomIndex;
     private Player player;
     private LuaTable args;
 
@@ -30,20 +18,15 @@ public class LuaCmdEvent extends Event {
         return args;
     }
 
-    public DungeonTour getDungeonTour() {
-        return dt;
+    public LuaCmdEvent(Player player, LuaTable args) {
+        this.player = player;
+        this.args = args;
     }
 
-    public DungeonInfo getDungeonInfo() {
-        return di;
-    }
-
-    public RoomInfo getRoomInfo() {
-        return ri;
-    }
-
-    public int getRoomIndex() {
-        return roomIndex;
+    public LuaCmdEvent(boolean isAsync, Player player, LuaTable args) {
+        super(isAsync);
+        this.player = player;
+        this.args = args;
     }
 
     public Player getPlayer() {

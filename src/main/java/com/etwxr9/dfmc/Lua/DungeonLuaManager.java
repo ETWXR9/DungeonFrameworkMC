@@ -15,6 +15,7 @@ import org.luaj.vm2.LuaError;
 public final class DungeonLuaManager {
 
     private DungeonLuaManager() {
+
     }
 
     public static DungeonLuaManager getInstance() {
@@ -70,7 +71,7 @@ public final class DungeonLuaManager {
                 String gameLua;
                 try {
                     gameLua = Files.readString(file.toPath());
-                    Main.getInstance().getLogger().info("读取地牢永久lua文件" + gameLuaName);
+                    // Main.getInstance().getLogger().info("读取地牢永久lua文件" + gameLuaName);
                 } catch (LuaError | IOException e) {
                     Main.getInstance().getLogger().info("读取lua文件出错！" + e.getMessage());
                     continue;

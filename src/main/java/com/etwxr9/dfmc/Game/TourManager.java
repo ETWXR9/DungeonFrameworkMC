@@ -187,8 +187,6 @@ public class TourManager implements Listener {
                 return;
             }
             if (t.room.equals(ri)) {
-                Bukkit.getLogger()
-                        .info("玩家" + t.GetFirstPlayer().getName() + "在进入房间" + ri.Id + "时，已经占用房间" + t.roomIndex);
                 list.add(t.roomIndex);
             }
         });
@@ -219,7 +217,6 @@ public class TourManager implements Listener {
             p.sendMessage("该房间所有副本都已被占用");
             return;
         }
-        Bukkit.getLogger().info("玩家" + p.getName() + "进入房间" + ri.Id + "且坐标为" + index);
         // 触发离开房间事件
         LeaveRoomEvent lre = new LeaveRoomEvent(tour, dungeon, ri, tour.roomIndex, p);
         Bukkit.getPluginManager().callEvent(lre);
